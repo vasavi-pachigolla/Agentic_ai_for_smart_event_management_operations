@@ -203,7 +203,7 @@ class GeminiAssistant:
         if not api_key:
             raise ValueError("GEMINI_API_KEY not set. Please set it in your environment.")
         self.client = genai.Client(api_key=api_key)
-        self.model = "gemini-2.5-flash"
+        self.model = "gemini-3.8-flash"
         self.system_instruction = """
         You are EventOps AI, an intelligent assistant for event management.
         You can help users with event information, registrations, venues, speakers, and reminders.
