@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Browse and discover events with AI for Smart Event.">
-    <title>Browse Events | AI for Smart Event</title>
+    <title>Browse Events | EventOps AI</title>
 
     <style>
         :root {
@@ -16,6 +16,8 @@
             --text: #f5f7ff;
             --muted: #aab5cf;
             --border: rgba(255, 255, 255, 0.10);
+            --green: #34d399;
+            --red: #fb7185;
         }
 
         * {
@@ -107,6 +109,27 @@
             color: white !important;
             border-radius: 10px;
             font-weight: 700;
+        }
+
+        /* Flash Messages */
+        .flash-wrapper {
+            margin-top: 20px;
+        }
+        .flash-message {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+        .flash-success {
+            background: rgba(52, 211, 153, 0.15);
+            color: var(--green);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+        .flash-danger, .flash-warning {
+            background: rgba(251, 113, 133, 0.15);
+            color: var(--red);
+            border: 1px solid rgba(251, 113, 133, 0.3);
         }
 
         /* Page introduction */
@@ -223,32 +246,6 @@
             background: #7463ed;
         }
 
-        /* Categories */
-        .categories {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 8px 0 28px;
-        }
-
-        .category-chip {
-            padding: 9px 16px;
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            background: var(--surface);
-            color: var(--muted);
-            cursor: pointer;
-            font-size: 13px;
-            transition: 0.2s;
-        }
-
-        .category-chip:hover,
-        .category-chip.active {
-            border-color: var(--primary);
-            background: rgba(139, 124, 255, 0.16);
-            color: white;
-        }
-
         /* Event listing heading */
         .listing-header {
             display: flex;
@@ -291,67 +288,16 @@
 
         .event-banner {
             position: relative;
-            min-height: 165px;
+            min-height: 140px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            background:
-                radial-gradient(circle at 20% 20%,
-                    rgba(255, 255, 255, 0.16), transparent 30%),
-                linear-gradient(135deg, #453b91, #252b53);
-        }
-
-        .event-banner::before,
-        .event-banner::after {
-            content: "";
-            position: absolute;
-            width: 180px;
-            height: 180px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 50%;
-        }
-
-        .event-banner::before {
-            top: -90px;
-            right: -35px;
-        }
-
-        .event-banner::after {
-            bottom: -135px;
-            left: -30px;
-            width: 220px;
-            height: 220px;
-        }
-
-        .banner-tech {
             background: linear-gradient(135deg, #4938a6, #186c83);
         }
 
-        .banner-business {
-            background: linear-gradient(135deg, #75449d, #293c77);
-        }
-
-        .banner-music {
-            background: linear-gradient(135deg, #a74481, #5636a3);
-        }
-
-        .banner-education {
-            background: linear-gradient(135deg, #1b7b85, #33469d);
-        }
-
-        .banner-art {
-            background: linear-gradient(135deg, #a15b35, #713c83);
-        }
-
-        .banner-network {
-            background: linear-gradient(135deg, #26766a, #344a98);
-        }
-
         .banner-emoji {
-            position: relative;
-            z-index: 1;
-            font-size: 62px;
+            font-size: 55px;
             filter: drop-shadow(0 7px 15px rgba(0, 0, 0, 0.22));
         }
 
@@ -359,7 +305,6 @@
             position: absolute;
             top: 14px;
             left: 14px;
-            z-index: 2;
             padding: 5px 11px;
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 30px;
@@ -367,6 +312,7 @@
             color: white;
             font-size: 11px;
             font-weight: 700;
+            text-transform: capitalize;
         }
 
         .event-content {
@@ -388,7 +334,7 @@
         }
 
         .event-description {
-            min-height: 66px;
+            min-height: 50px;
             margin-bottom: 16px;
             color: var(--muted);
             font-size: 13px;
@@ -427,6 +373,7 @@
             font-size: 12px;
             font-weight: 700;
             cursor: pointer;
+            text-align: center;
         }
 
         .details-button:hover {
@@ -444,28 +391,11 @@
             font-size: 12px;
             font-weight: 700;
             cursor: pointer;
+            width: 100%;
         }
 
         .register-button:hover {
             background: #7463ed;
-        }
-
-        .event-extra {
-            margin-top: 14px;
-            padding-top: 12px;
-            border-top: 1px solid var(--border);
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-        .event-extra summary {
-            color: var(--secondary);
-            cursor: pointer;
-            font-weight: 700;
-        }
-
-        .event-extra p {
-            padding-top: 10px;
         }
 
         .no-results {
@@ -475,6 +405,7 @@
             border-radius: 18px;
             text-align: center;
             color: var(--muted);
+            grid-column: 1 / -1;
         }
 
         .no-results .empty-icon {
@@ -487,41 +418,9 @@
             color: var(--text);
         }
 
-        /* Call to action */
-        .cta {
-            margin: 75px 0;
-            padding: 42px 25px;
-            border: 1px solid rgba(139, 124, 255, 0.3);
-            border-radius: 22px;
-            background:
-                radial-gradient(ellipse at top right,
-                    rgba(139, 124, 255, 0.15), transparent 50%),
-                var(--surface);
-            text-align: center;
-        }
-
-        .cta h2 {
-            margin-bottom: 12px;
-            font-size: clamp(25px, 4vw, 35px);
-        }
-
-        .cta p {
-            max-width: 620px;
-            margin: 0 auto 23px;
-            color: var(--muted);
-        }
-
-        .cta a {
-            display: inline-block;
-            padding: 12px 22px;
-            border-radius: 10px;
-            background: var(--primary);
-            color: white;
-            font-weight: 700;
-        }
-
         /* Footer */
         footer {
+            margin-top: 50px;
             padding: 27px 0;
             border-top: 1px solid var(--border);
             color: var(--muted);
@@ -549,64 +448,20 @@
             .event-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
-
             .search-panel {
                 grid-template-columns: 1fr 1fr;
             }
-
             .search-button {
                 grid-column: 1 / -1;
             }
         }
 
         @media (max-width: 600px) {
-            .nav-content {
-                padding: 14px 0;
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .nav-links {
-                width: 100%;
-                flex-wrap: wrap;
-                gap: 13px;
-            }
-
-            .hero {
-                padding-top: 45px;
-            }
-
-            .search-panel {
-                grid-template-columns: 1fr;
-                padding: 14px;
-            }
-
-            .search-button {
-                grid-column: auto;
-            }
-
             .event-grid {
                 grid-template-columns: 1fr;
             }
-
-            .listing-header {
-                align-items: flex-start;
-                flex-direction: column;
-                gap: 5px;
-            }
-
-            .event-description {
-                min-height: auto;
-            }
-
-            .cta {
-                margin: 50px 0;
-                padding: 32px 20px;
-            }
-
-            .footer-content {
-                align-items: flex-start;
-                flex-direction: column;
+            .search-panel {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -618,16 +473,23 @@
     <header class="navbar">
         <div class="container nav-content">
 
-            <a href="/" class="brand">
+            <a href="{{ url_for('index') }}" class="brand">
                 <span class="brand-icon">✦</span>
-                <span class="brand-name">Event<span>AI</span></span>
+                <span class="brand-name">Event<span>Ops AI</span></span>
             </a>
 
             <nav class="nav-links" aria-label="Main navigation">
-                <a href="/">Home</a>
-                <a href="/about">About</a>
-                <a href="/events" class="active">Browse Events</a>
-                <a href="/login" class="nav-button">Get Started</a>
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('events') }}" class="active">Browse Events</a>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('user_my_registrations') }}">My Registrations</a>
+                    <a href="{{ url_for('logout') }}" class="nav-button">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('about') }}">About</a>
+                    <a href="{{ url_for('contact') }}">Contact</a>
+                    <a href="{{ url_for('login') }}" class="nav-button">Login</a>
+                {% endif %}
             </nav>
 
         </div>
@@ -635,79 +497,58 @@
 
     <main>
 
+        <div class="container flash-wrapper">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category if category != 'error' else 'danger' }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
         <!-- Page introduction -->
         <section class="hero">
             <div class="container">
-
                 <div class="eyebrow">Discover What's Happening</div>
-
                 <h1>
                     Find Your Next
                     <span class="gradient-text">Great Experience.</span>
                 </h1>
-
                 <p>
-                    Explore events, discover new interests, connect with
-                    people, and find opportunities to learn and grow.
-                    Search the listings below to discover something for you.
+                    Explore events, discover new interests, connect with people,
+                    and find opportunities to learn and grow.
                 </p>
-
             </div>
         </section>
 
         <!-- Search and filters -->
         <section class="search-section">
             <div class="container">
-
                 <div class="search-panel">
-
                     <div class="search-box">
                         <span aria-hidden="true">⌕</span>
                         <input
                             type="search"
                             id="eventSearch"
                             placeholder="Search event name or location..."
-                            aria-label="Search events by name or location"
+                            aria-label="Search events"
                         >
                     </div>
 
-                    <select
-                        id="categorySelect"
-                        class="category-select"
-                        aria-label="Filter by category"
-                    >
-                        <option value="all">All Categories</option>
-                        <option value="technology">Technology</option>
-                        <option value="business">Business</option>
-                        <option value="music">Music</option>
-                        <option value="education">Education</option>
-                        <option value="arts">Arts & Culture</option>
-                        <option value="networking">Networking</option>
+                    <select id="statusSelect" class="category-select" aria-label="Filter by status">
+                        <option value="all">All Statuses</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="ongoing">Ongoing</option>
+                        <option value="completed">Completed</option>
                     </select>
 
                     <button type="button" class="search-button" id="searchButton">
-                        Search Events
+                        Filter Events
                     </button>
-
                 </div>
-
-                <div class="categories" aria-label="Quick category filters">
-                    <button class="category-chip active"
-                            data-category="all" type="button">All Events</button>
-                    <button class="category-chip"
-                            data-category="technology" type="button">💻 Technology</button>
-                    <button class="category-chip"
-                            data-category="business" type="button">💼 Business</button>
-                    <button class="category-chip"
-                            data-category="music" type="button">🎵 Music</button>
-                    <button class="category-chip"
-                            data-category="education" type="button">📚 Education</button>
-                    <button class="category-chip"
-                            data-category="arts" type="button">🎨 Arts & Culture</button>
-                    <button class="category-chip"
-                            data-category="networking" type="button">🤝 Networking</button>
-                </div>
-
             </div>
         </section>
 
@@ -717,283 +558,74 @@
 
                 <div class="listing-header">
                     <h2>Explore Events</h2>
-                    <p class="results-count" id="resultsCount" aria-live="polite">
-                        Showing 6 events
+                    <p class="results-count" id="resultsCount">
+                        Showing {{ events | length }} events
                     </p>
                 </div>
 
                 <div class="event-grid" id="eventGrid">
 
-                    <!-- Sample Event 1 -->
+                    {% for event in events %}
                     <article class="event-card"
-                             data-category="technology"
-                             data-search="ai innovation summit technology artificial intelligence hyderabad">
+                             data-status="{{ event.status | default('upcoming') | lower }}"
+                             data-search="{{ event.title | lower }} {{ event.location | default('') | lower }} {{ event.description | default('') | lower }}">
 
-                        <div class="event-banner banner-tech">
-                            <span class="event-category">Technology</span>
-                            <span class="banner-emoji" aria-hidden="true">🤖</span>
+                        <div class="event-banner">
+                            <span class="event-category">{{ event.status | default('Upcoming') }}</span>
+                            <span class="banner-emoji" aria-hidden="true">🎉</span>
                         </div>
 
                         <div class="event-content">
-                            <p class="event-date">📅 15 NOVEMBER 2026</p>
-                            <h3>AI & Innovation Summit</h3>
+                            <p class="event-date">📅 {{ event.date or 'Date TBD' }}</p>
+                            <h3>{{ event.title }}</h3>
 
                             <p class="event-description">
-                                Explore artificial intelligence, emerging
-                                technologies, and practical innovation ideas.
+                                {{ event.description[:110] }}{% if event.description and event.description|length > 110 %}...{% endif %}
                             </p>
 
                             <div class="event-meta">
-                                <span>📍 Hyderabad, Telangana</span>
-                                <span>🕘 10:00 AM onwards</span>
+                                <span>📍 {{ event.location or 'Location TBD' }}</span>
+                                <span>🕘 {{ event.time or 'Time TBD' }}</span>
+                                {% if event.capacity %}
+                                <span>👥 Capacity: {{ event.capacity }} attendees</span>
+                                {% endif %}
                             </div>
 
                             <div class="event-actions">
-                                <details class="event-extra">
-                                    <summary>View Details</summary>
-                                    <p>
-                                        A sample technology event featuring
-                                        AI concepts, demonstrations, and
-                                        discussions about future applications.
-                                    </p>
-                                </details>
-                                <button class="register-button"
-                                        type="button"
-                                        data-event="AI & Innovation Summit">
-                                    Register Interest
-                                </button>
+                                <a href="{{ url_for('event_detail', event_id=event.id) }}" class="details-button">
+                                    Details
+                                </a>
+
+                                {% if current_user.is_authenticated %}
+                                    <form action="{{ url_for('register_for_event', event_id=event.id) }}" method="POST" style="flex: 1; margin: 0;">
+                                        {{ form.csrf_token }}
+                                        <input type="hidden" name="ticket_type" value="Standard">
+                                        <button type="submit" class="register-button">
+                                            Register Now
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <a href="{{ url_for('login') }}" class="register-button" style="text-align: center; display: block;">
+                                        Login to Register
+                                    </a>
+                                {% endif %}
                             </div>
                         </div>
                     </article>
-
-                    <!-- Sample Event 2 -->
-                    <article class="event-card"
-                             data-category="business"
-                             data-search="entrepreneurship startup business founders vizag visakhapatnam">
-
-                        <div class="event-banner banner-business">
-                            <span class="event-category">Business</span>
-                            <span class="banner-emoji" aria-hidden="true">🚀</span>
+                    {% else %}
+                        <div class="no-results" style="display: block;">
+                            <div class="empty-icon">📅</div>
+                            <h3>No events scheduled right now</h3>
+                            <p>Check back soon for new summits, meetups, and conferences.</p>
                         </div>
+                    {% endfor %}
 
-                        <div class="event-content">
-                            <p class="event-date">📅 20 NOVEMBER 2026</p>
-                            <h3>Startup & Entrepreneurship Meet</h3>
+                    <div class="no-results" id="noResults">
+                        <div class="empty-icon">🔎</div>
+                        <h3>No matching events found</h3>
+                        <p>Try searching for a different keyword or filter.</p>
+                    </div>
 
-                            <p class="event-description">
-                                Learn about startup ideas, business planning,
-                                and turning concepts into practical projects.
-                            </p>
-
-                            <div class="event-meta">
-                                <span>📍 Visakhapatnam, Andhra Pradesh</span>
-                                <span>🕘 11:00 AM onwards</span>
-                            </div>
-
-                            <div class="event-actions">
-                                <details class="event-extra">
-                                    <summary>View Details</summary>
-                                    <p>
-                                        A sample meetup for aspiring founders
-                                        to discuss business ideas, teamwork,
-                                        and early-stage challenges.
-                                    </p>
-                                </details>
-                                <button class="register-button"
-                                        type="button"
-                                        data-event="Startup & Entrepreneurship Meet">
-                                    Register Interest
-                                </button>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Sample Event 3 -->
-                    <article class="event-card"
-                             data-category="music"
-                             data-search="live music festival music concert performance hyderabad">
-
-                        <div class="event-banner banner-music">
-                            <span class="event-category">Music</span>
-                            <span class="banner-emoji" aria-hidden="true">🎶</span>
-                        </div>
-
-                        <div class="event-content">
-                            <p class="event-date">📅 28 NOVEMBER 2026</p>
-                            <h3>Live Music & Cultural Night</h3>
-
-                            <p class="event-description">
-                                Enjoy an evening inspired by music, artistic
-                                performances, and cultural expression.
-                            </p>
-
-                            <div class="event-meta">
-                                <span>📍 Hyderabad, Telangana</span>
-                                <span>🕘 5:00 PM onwards</span>
-                            </div>
-
-                            <div class="event-actions">
-                                <details class="event-extra">
-                                    <summary>View Details</summary>
-                                    <p>
-                                        A sample entertainment listing for
-                                        live performances and cultural
-                                        activities.
-                                    </p>
-                                </details>
-                                <button class="register-button"
-                                        type="button"
-                                        data-event="Live Music & Cultural Night">
-                                    Register Interest
-                                </button>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Sample Event 4 -->
-                    <article class="event-card"
-                             data-category="education"
-                             data-search="student workshop career skills learning education rajahmundry">
-
-                        <div class="event-banner banner-education">
-                            <span class="event-category">Education</span>
-                            <span class="banner-emoji" aria-hidden="true">🎓</span>
-                        </div>
-
-                        <div class="event-content">
-                            <p class="event-date">📅 05 DECEMBER 2026</p>
-                            <h3>Student Skills Workshop</h3>
-
-                            <p class="event-description">
-                                Explore learning opportunities, practical
-                                skills, and career preparation strategies.
-                            </p>
-
-                            <div class="event-meta">
-                                <span>📍 Rajahmundry, Andhra Pradesh</span>
-                                <span>🕘 9:30 AM onwards</span>
-                            </div>
-
-                            <div class="event-actions">
-                                <details class="event-extra">
-                                    <summary>View Details</summary>
-                                    <p>
-                                        A sample educational workshop focused
-                                        on student development and hands-on
-                                        learning activities.
-                                    </p>
-                                </details>
-                                <button class="register-button"
-                                        type="button"
-                                        data-event="Student Skills Workshop">
-                                    Register Interest
-                                </button>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Sample Event 5 -->
-                    <article class="event-card"
-                             data-category="arts"
-                             data-search="art exhibition creative design painting arts culture hyderabad">
-
-                        <div class="event-banner banner-art">
-                            <span class="event-category">Arts & Culture</span>
-                            <span class="banner-emoji" aria-hidden="true">🎨</span>
-                        </div>
-
-                        <div class="event-content">
-                            <p class="event-date">📅 12 DECEMBER 2026</p>
-                            <h3>Creative Arts Exhibition</h3>
-
-                            <p class="event-description">
-                                Discover creative work, visual art, design
-                                ideas, and different forms of expression.
-                            </p>
-
-                            <div class="event-meta">
-                                <span>📍 Hyderabad, Telangana</span>
-                                <span>🕘 10:30 AM onwards</span>
-                            </div>
-
-                            <div class="event-actions">
-                                <details class="event-extra">
-                                    <summary>View Details</summary>
-                                    <p>
-                                        A sample arts event showcasing
-                                        creativity, visual expression,
-                                        and artistic exploration.
-                                    </p>
-                                </details>
-                                <button class="register-button"
-                                        type="button"
-                                        data-event="Creative Arts Exhibition">
-                                    Register Interest
-                                </button>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Sample Event 6 -->
-                    <article class="event-card"
-                             data-category="networking"
-                             data-search="developer networking meetup technology community collaboration vijayawada">
-
-                        <div class="event-banner banner-network">
-                            <span class="event-category">Networking</span>
-                            <span class="banner-emoji" aria-hidden="true">🤝</span>
-                        </div>
-
-                        <div class="event-content">
-                            <p class="event-date">📅 19 DECEMBER 2026</p>
-                            <h3>Developer Community Meetup</h3>
-
-                            <p class="event-description">
-                                Connect with fellow learners, exchange ideas,
-                                and discuss software development experiences.
-                            </p>
-
-                            <div class="event-meta">
-                                <span>📍 Vijayawada, Andhra Pradesh</span>
-                                <span>🕘 2:00 PM onwards</span>
-                            </div>
-
-                            <div class="event-actions">
-                                <details class="event-extra">
-                                    <summary>View Details</summary>
-                                    <p>
-                                        A sample community meetup designed
-                                        for technical discussions, peer
-                                        learning, and collaboration.
-                                    </p>
-                                </details>
-                                <button class="register-button"
-                                        type="button"
-                                        data-event="Developer Community Meetup">
-                                    Register Interest
-                                </button>
-                            </div>
-                        </div>
-                    </article>
-
-                </div>
-
-                <!-- Empty search results -->
-                <div class="no-results" id="noResults">
-                    <div class="empty-icon">🔎</div>
-                    <h3>No matching events found</h3>
-                    <p>Try another keyword or choose a different category.</p>
-                </div>
-
-                <!-- Call to action -->
-                <div class="cta">
-                    <h2>Have an event in mind?</h2>
-                    <p>
-                        This platform can be extended to let authorized
-                        organizers create events and manage registrations
-                        directly through the application.
-                    </p>
-                    <a href="/login">Get Started</a>
                 </div>
 
             </div>
@@ -1004,53 +636,36 @@
     <!-- Footer -->
     <footer>
         <div class="container footer-content">
-            <p>
-                &copy; <span id="currentYear"></span>
-                AI for Smart Event. Built for smarter event experiences.
-            </p>
-
+            <p>&copy; <span id="currentYear"></span> EventOps AI. Autonomous Event Management.</p>
             <div class="footer-links">
-                <a href="/">Home</a>
-                <a href="/about">About</a>
-                <a href="/events">Browse Events</a>
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('events') }}">Browse Events</a>
+                <a href="{{ url_for('contact') }}">Contact</a>
             </div>
         </div>
     </footer>
 
     <script>
         const searchInput = document.getElementById("eventSearch");
-        const categorySelect = document.getElementById("categorySelect");
+        const statusSelect = document.getElementById("statusSelect");
         const searchButton = document.getElementById("searchButton");
-        const categoryChips = document.querySelectorAll(".category-chip");
         const eventCards = document.querySelectorAll(".event-card");
         const resultsCount = document.getElementById("resultsCount");
         const noResults = document.getElementById("noResults");
 
-        let activeCategory = "all";
-
         function filterEvents() {
             const keyword = searchInput.value.trim().toLowerCase();
-            const selectedCategory = categorySelect.value;
+            const selectedStatus = statusSelect.value;
             let visibleCount = 0;
 
-            activeCategory = selectedCategory;
-
             eventCards.forEach(function(card) {
-                const searchableText =
-                    (card.dataset.search || "") + " " +
-                    card.textContent.toLowerCase();
+                const searchableText = (card.dataset.search || "") + " " + card.textContent.toLowerCase();
+                const cardStatus = card.dataset.status;
 
-                const cardCategory = card.dataset.category;
+                const matchesKeyword = searchableText.includes(keyword);
+                const matchesStatus = (selectedStatus === "all") || (cardStatus === selectedStatus);
 
-                const matchesKeyword =
-                    searchableText.toLowerCase().includes(keyword);
-
-                const matchesCategory =
-                    selectedCategory === "all" ||
-                    cardCategory === selectedCategory;
-
-                const visible = matchesKeyword && matchesCategory;
-
+                const visible = matchesKeyword && matchesStatus;
                 card.style.display = visible ? "" : "none";
 
                 if (visible) {
@@ -1058,59 +673,19 @@
                 }
             });
 
-            resultsCount.textContent =
-                "Showing " + visibleCount +
-                (visibleCount === 1 ? " event" : " events");
-
-            noResults.style.display =
-                visibleCount === 0 ? "block" : "none";
-
-            categoryChips.forEach(function(chip) {
-                chip.classList.toggle(
-                    "active",
-                    chip.dataset.category === activeCategory
-                );
-            });
+            if (resultsCount) {
+                resultsCount.textContent = "Showing " + visibleCount + (visibleCount === 1 ? " event" : " events");
+            }
+            if (noResults) {
+                noResults.style.display = (eventCards.length > 0 && visibleCount === 0) ? "block" : "none";
+            }
         }
 
         searchButton.addEventListener("click", filterEvents);
-
         searchInput.addEventListener("input", filterEvents);
+        statusSelect.addEventListener("change", filterEvents);
 
-        categorySelect.addEventListener("change", filterEvents);
-
-        searchInput.addEventListener("keydown", function(event) {
-            if (event.key === "Enter") {
-                filterEvents();
-            }
-        });
-
-        categoryChips.forEach(function(chip) {
-            chip.addEventListener("click", function() {
-                categorySelect.value = chip.dataset.category;
-                filterEvents();
-            });
-        });
-
-        document.querySelectorAll(".register-button").forEach(
-            function(button) {
-                button.addEventListener("click", function() {
-                    const eventName = button.dataset.event;
-
-                    alert(
-                        "You selected: " + eventName +
-                        "\n\nRegistration is not connected yet. " +
-                        "Connect this button to your Flask registration " +
-                        "route to enable real registrations."
-                    );
-                });
-            }
-        );
-
-        document.getElementById("currentYear").textContent =
-            new Date().getFullYear();
-
-        filterEvents();
+        document.getElementById("currentYear").textContent = new Date().getFullYear();
     </script>
 
 </body>
