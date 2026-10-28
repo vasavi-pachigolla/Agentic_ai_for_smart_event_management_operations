@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Registrations | EventAI</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0b1020;
+            --panel: #151e33;
+            --panel-light: #1c2740;
+            --purple: #8b5cf6;
+            --cyan: #22d3ee;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.18);
+            --green: #34d399;
+            --yellow: #fbbf24;
+            --red: #fb7185;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background:
+                radial-gradient(circle at 5% 10%, rgba(139, 92, 246, 0.12), transparent 30%),
+                radial-gradient(circle at 95% 90%, rgba(34, 211, 238, 0.07), transparent 30%),
+                var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button, input {
+            font: inherit;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 20px 7%;
+            border-bottom: 1px solid var(--border);
+            background: rgba(11, 16, 32, 0.85);
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: var(--cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            font-size: 14px;
+            color: var(--muted);
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--cyan);
+        }
+
+        .container {
+            width: min(1150px, 90%);
+            margin: 45px auto;
+        }
+
+        .breadcrumb {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 25px;
+        }
+
+        .breadcrumb a {
+            color: var(--cyan);
+        }
+
+        .page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 25px;
+            background: rgba(139, 92, 246, 0.12);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            color: #c4b5fd;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .page-header h1 {
+            font-size: clamp(28px, 4vw, 39px);
+            letter-spacing: -1.2px;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .primary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 18px;
+            background: linear-gradient(100deg, var(--purple), #6d5dfc);
+            border-radius: 10px;
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            transition: transform 0.2s;
+            white-space: nowrap;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            padding: 23px;
+            background: rgba(21, 30, 51, 0.9);
+            border: 1px solid var(--border);
+            border-radius: 17px;
+        }
+
+        .stat-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .stat-icon {
+            display: grid;
+            place-items: center;
+            width: 39px;
+            height: 39px;
+            border-radius: 12px;
+            background: var(--panel-light);
+            font-size: 18px;
+        }
+
+        .stat-number {
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .stat-caption {
+            margin-top: 7px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .content-card {
+            background: rgba(21, 30, 51, 0.94);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+            padding: 22px 24px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .toolbar h2 {
+            font-size: 18px;
+        }
+
+        .toolbar p {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .toolbar-controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .search-box,
+        .filter-select {
+            padding: 11px 13px;
+            background: #0e172a;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            color: var(--text);
+            font-size: 12px;
+            outline: none;
+        }
+
+        .search-box {
+            width: 220px;
+        }
+
+        .search-box:focus,
+        .filter-select:focus {
+            border-color: var(--purple);
+        }
+
+        .filter-select option {
+            background: var(--panel);
+        }
+
+        .flash-message {
+            margin: 18px 24px 0;
+            padding: 13px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .flash-message.success {
+            background: rgba(52, 211, 153, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            color: var(--green);
+        }
+
+        .flash-message.error {
+            background: rgba(251, 113, 133, 0.1);
+            border: 1px solid rgba(251, 113, 133, 0.25);
+            color: var(--red);
+        }
+
+        .registration-list {
+            padding: 8px 24px;
+        }
+
+        .registration-item {
+            display: grid;
+            grid-template-columns: 76px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 20px;
+            padding: 23px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .registration-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-icon {
+            width: 76px;
+            height: 76px;
+            display: grid;
+            place-items: center;
+            border-radius: 15px;
+            background:
+                radial-gradient(circle at top left, rgba(34, 211, 238, 0.2), transparent 55%),
+                linear-gradient(135deg, #312e81, #581c87);
+            font-size: 30px;
+        }
+
+        .event-category {
+            color: var(--cyan);
+            text-transform: uppercase;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+
+        .event-title {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .event-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .registration-number {
+            margin-top: 9px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .registration-number strong {
+            color: #cbd5e1;
+        }
+
+        .item-actions {
+            display: flex;
+            align-items: flex-end;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            background: currentColor;
+            border-radius: 50%;
+        }
+
+        .status.confirmed {
+            color: var(--green);
+            background: rgba(52, 211, 153, 0.1);
+        }
+
+        .status.pending {
+            color: var(--yellow);
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        .status.cancelled {
+            color: var(--red);
+            background: rgba(251, 113, 133, 0.1);
+        }
+
+        .status.completed {
+            color: #c4b5fd;
+            background: rgba(139, 92, 246, 0.13);
+        }
+
+        .view-btn {
+            padding: 10px 13px;
+            border: 1px solid rgba(139, 92, 246, 0.35);
+            background: rgba(139, 92, 246, 0.08);
+            border-radius: 9px;
+            color: #c4b5fd;
+            font-size: 11px;
+            font-weight: 700;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .view-btn:hover {
+            background: rgba(139, 92, 246, 0.18);
+        }
+
+        .empty-state {
+            padding: 65px 20px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            width: 75px;
+            height: 75px;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 20px;
+            background: var(--panel-light);
+            border-radius: 22px;
+            font-size: 32px;
+        }
+
+        .empty-state h3 {
+            font-size: 19px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            max-width: 420px;
+            margin: 0 auto 22px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .no-results {
+            display: none;
+            text-align: center;
+            padding: 35px 20px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .help-text {
+            color: var(--muted);
+            text-align: center;
+            font-size: 12px;
+            line-height: 1.8;
+            margin-top: 24px;
+        }
+
+        .help-text a {
+            color: var(--cyan);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 25px 15px;
+            margin-top: 45px;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        @media (max-width: 800px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .registration-item {
+                grid-template-columns: 62px minmax(0, 1fr);
+                gap: 15px;
+            }
+
+            .event-icon {
+                width: 62px;
+                height: 62px;
+                font-size: 25px;
+            }
+
+            .item-actions {
+                grid-column: 2;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .navbar {
+                padding: 18px 5%;
+            }
+
+            .nav-links {
+                gap: 14px;
+            }
+
+            .nav-links a {
+                font-size: 12px;
+            }
+
+            .container {
+                margin-top: 30px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 18px;
+            }
+
+            .toolbar {
+                padding: 18px;
+            }
+
+            .toolbar-controls {
+                width: 100%;
+            }
+
+            .search-box,
+            .filter-select {
+                width: 100%;
+            }
+
+            .registration-list {
+                padding: 5px 18px;
+            }
+
+            .registration-item {
+                gap: 12px;
+                padding: 20px 0;
+            }
+
+            .event-title {
+                font-size: 14px;
+            }
+
+            .event-meta {
+                gap: 7px;
+                flex-direction: column;
+            }
+
+            .item-actions {
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a href="{{ url_for('dashboard') }}" class="logo">
+            Event<span>AI</span>
+        </a>
+
+        <div class="nav-links">
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('events') }}">Events</a>
+            <a href="{{ url_for('user_registrations') }}" class="active">My Registrations</a>
+            <a href="{{ url_for('about') }}">About</a>
+            <a href="{{ url_for('contact') }}">Contact</a>
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <div class="breadcrumb">
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            &nbsp; / &nbsp; My Registrations
+        </div>
+
+        <section class="page-header">
+            <div>
+                <span class="eyebrow">✦ YOUR EVENT ACTIVITY</span>
+                <h1>My Registrations</h1>
+                <p>Keep track of your registered events, schedules, and registration status.</p>
+            </div>
+
+            <a href="{{ url_for('events') }}" class="primary-btn">
+                + Explore Events
+            </a>
+        </section>
+
+        <!-- Summary statistics -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-label">Total Registrations</span>
+                    <div class="stat-icon">🎟️</div>
+                </div>
+                <div class="stat-number">{{ total_registrations | default(registrations | default([], true) | length, true) }}</div>
+                <div class="stat-caption">All your event registrations</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-label">Upcoming Events</span>
+                    <div class="stat-icon">📅</div>
+                </div>
+                <div class="stat-number">{{ upcoming_count | default(0, true) }}</div>
+                <div class="stat-caption">Events scheduled for the future</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-label">Completed Events</span>
+                    <div class="stat-icon">🏆</div>
+                </div>
+                <div class="stat-number">{{ completed_count | default(0, true) }}</div>
+                <div class="stat-caption">Events already attended or completed</div>
+            </div>
+        </section>
+
+        <!-- Registrations list -->
+        <section class="content-card">
+
+            <div class="toolbar">
+                <div>
+                    <h2>Registered Events</h2>
+                    <p>View your event details and registration information.</p>
+                </div>
+
+                <div class="toolbar-controls">
+                    <input
+                        type="search"
+                        id="registrationSearch"
+                        class="search-box"
+                        placeholder="Search your events..."
+                        aria-label="Search registrations"
+                    >
+
+                    <select id="statusFilter" class="filter-select" aria-label="Filter by status">
+                        <option value="all">All Statuses</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="pending">Pending</option>
+                        <option value="cancelled">Cancelled</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ 'error' if category == 'error' else 'success' }}"
+                             role="status">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% if registrations %}
+                <div class="registration-list" id="registrationList">
+
+                    {% for registration in registrations %}
+                        {% set event = registration.event if registration.event is defined and registration.event else registration %}
+                        {% set status_value = registration.status | default('Confirmed', true) | lower %}
+
+                        <article
+                            class="registration-item"
+                            data-status="{{ status_value }}"
+                            data-search="{{ (event.title | default('Event', true)) | lower }} {{ (event.category | default('', true)) | lower }} {{ (event.venue | default('', true)) | lower }} {{ (registration.registration_number | default('', true)) | lower }}"
+                        >
+                            <div class="event-icon" aria-hidden="true">
+                                {% if event.category is defined and event.category %}
+                                    {% if event.category | lower == 'technology' %}
+                                        💻
+                                    {% elif event.category | lower == 'workshop' %}
+                                        🛠️
+                                    {% elif event.category | lower == 'music' %}
+                                        🎵
+                                    {% elif event.category | lower == 'sports' %}
+                                        🏆
+                                    {% elif event.category | lower == 'business' %}
+                                        📊
+                                    {% else %}
+                                        🎟️
+                                    {% endif %}
+                                {% else %}
+                                    🎟️
+                                {% endif %}
+                            </div>
+
+                            <div class="event-details">
+                                <div class="event-category">
+                                    {{ event.category | default('General Event', true) }}
+                                </div>
+
+                                <h3 class="event-title">
+                                    {{ event.title | default('Untitled Event', true) }}
+                                </h3>
+
+                                <div class="event-meta">
+                                    <span>📅 {{ event.date | default('Date not available', true) }}</span>
+                                    <span>📍 {{ event.venue | default('Venue not available', true) }}</span>
+                                    <span>🎫 {{ registration.ticket_type | default('Standard', true) }}</span>
+                                </div>
+
+                                <div class="registration-number">
+                                    Registration ID:
+                                    <strong>
+                                        {{ registration.registration_number | default(registration.id | default('Not assigned', true), true) }}
+                                    </strong>
+                                </div>
+                            </div>
+
+                            <div class="item-actions">
+                                <span class="status {{ status_value }}">
+                                    {{ registration.status | default('Confirmed', true) }}
+                                </span>
+
+                                {% if event.id is defined and event.id %}
+                                    <a href="{{ url_for('event_detail', event_id=event.id) }}"
+                                       class="view-btn">
+                                        View Event →
+                                    </a>
+                                {% else %}
+                                    <a href="{{ url_for('events') }}" class="view-btn">
+                                        Explore Events →
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </article>
+                    {% endfor %}
+
+                </div>
+
+                <div class="no-results" id="noResults">
+                    No registrations match your search or selected status.
+                </div>
+
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">🎫</div>
+                    <h3>No registrations yet</h3>
+                    <p>
+                        You haven't registered for any events yet. Explore upcoming events,
+                        discover new opportunities, and register for the ones that interest you.
+                    </p>
+                    <a href="{{ url_for('events') }}" class="primary-btn">
+                        Discover Events →
+                    </a>
+                </div>
+            {% endif %}
+
+        </section>
+
+        <p class="help-text">
+            Need help with a registration?
+            <a href="{{ url_for('contact') }}">Contact our support team</a>.
+        </p>
+
+    </main>
+
+    <footer class="footer">
+        © 2026 EventAI · AI-Powered Event Management System
+    </footer>
+
+    <script>
+        const searchInput = document.getElementById('registrationSearch');
+        const statusFilter = document.getElementById('statusFilter');
+        const registrationItems = document.querySelectorAll('.registration-item');
+        const noResults = document.getElementById('noResults');
+
+        function filterRegistrations() {
+            if (!searchInput || !statusFilter || !noResults) {
+                return;
+            }
+
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const selectedStatus = statusFilter.value;
+            let visibleCount = 0;
+
+            registrationItems.forEach(function (item) {
+                const searchData = item.dataset.search || '';
+                const itemStatus = (item.dataset.status || '').toLowerCase();
+
+                const matchesSearch = searchData.includes(searchTerm);
+                const matchesStatus =
+                    selectedStatus === 'all' || itemStatus === selectedStatus;
+
+                const visible = matchesSearch && matchesStatus;
+                item.style.display = visible ? 'grid' : 'none';
+
+                if (visible) {
+                    visibleCount++;
+                }
+            });
+
+            noResults.style.display =
+                visibleCount === 0 ? 'block' : 'none';
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', filterRegistrations);
+        }
+
+        if (statusFilter) {
+            statusFilter.addEventListener('change', filterRegistrations);
+        }
+    </script>
+
+</body>
+</html>
