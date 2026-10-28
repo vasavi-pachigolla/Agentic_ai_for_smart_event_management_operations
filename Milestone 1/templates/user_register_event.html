@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration | EventAI</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0b1020;
+            --panel: #151e33;
+            --panel-light: #1c2740;
+            --purple: #8b5cf6;
+            --cyan: #22d3ee;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.18);
+            --success: #34d399;
+            --danger: #fb7185;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(139, 92, 246, 0.13), transparent 32%),
+                radial-gradient(circle at 90% 90%, rgba(34, 211, 238, 0.08), transparent 30%),
+                var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 7%;
+            border-bottom: 1px solid var(--border);
+            background: rgba(11, 16, 32, 0.85);
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: var(--cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--cyan);
+        }
+
+        .container {
+            width: min(1080px, 90%);
+            margin: 45px auto;
+        }
+
+        .breadcrumb {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        .breadcrumb a {
+            color: var(--cyan);
+        }
+
+        .page-heading {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            color: var(--cyan);
+            background: rgba(34, 211, 238, 0.08);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            padding: 7px 13px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 17px;
+        }
+
+        .page-heading h1 {
+            font-size: clamp(28px, 4vw, 42px);
+            letter-spacing: -1.5px;
+            margin-bottom: 12px;
+        }
+
+        .page-heading p {
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .registration-layout {
+            display: grid;
+            grid-template-columns: 0.85fr 1.15fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .event-card,
+        .form-card {
+            background: rgba(21, 30, 51, 0.95);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            overflow: hidden;
+        }
+
+        .event-banner {
+            min-height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background:
+                radial-gradient(circle at 25% 25%, rgba(34, 211, 238, 0.28), transparent 35%),
+                linear-gradient(135deg, #312e81, #581c87, #164e63);
+            font-size: 70px;
+        }
+
+        .event-content {
+            padding: 26px;
+        }
+
+        .category {
+            display: inline-block;
+            padding: 6px 11px;
+            border-radius: 20px;
+            background: rgba(139, 92, 246, 0.15);
+            color: #c4b5fd;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .event-content h2 {
+            font-size: 23px;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        .event-description {
+            font-size: 13px;
+            line-height: 1.8;
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+
+        .event-info {
+            display: grid;
+            gap: 17px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+        }
+
+        .info-icon {
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            background: var(--panel-light);
+            font-size: 17px;
+        }
+
+        .info-text small {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            margin-bottom: 5px;
+        }
+
+        .info-text strong {
+            font-size: 13px;
+            font-weight: 600;
+            overflow-wrap: anywhere;
+        }
+
+        .form-card {
+            padding: 30px;
+        }
+
+        .form-heading {
+            margin-bottom: 25px;
+        }
+
+        .form-heading h2 {
+            font-size: 23px;
+            margin-bottom: 9px;
+        }
+
+        .form-heading p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .flash-message {
+            padding: 13px 15px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .flash-message.success {
+            background: rgba(52, 211, 153, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            color: var(--success);
+        }
+
+        .flash-message.error {
+            background: rgba(251, 113, 133, 0.1);
+            border: 1px solid rgba(251, 113, 133, 0.3);
+            color: var(--danger);
+        }
+
+        .form-group {
+            margin-bottom: 19px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 9px;
+        }
+
+        .required {
+            color: var(--danger);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 13px 14px;
+            background: #0e172a;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control::placeholder {
+            color: #64748b;
+        }
+
+        .form-control:focus {
+            border-color: var(--purple);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+        }
+
+        select.form-control option {
+            background: var(--panel);
+            color: var(--text);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 22px 0;
+        }
+
+        .checkbox-group input {
+            margin-top: 3px;
+            accent-color: var(--purple);
+        }
+
+        .checkbox-group label {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .checkbox-group a {
+            color: var(--cyan);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 11px;
+            background: linear-gradient(100deg, var(--purple), #6d5dfc);
+            color: white;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.25);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .secure-note {
+            text-align: center;
+            margin-top: 16px;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 25px 15px;
+            margin-top: 45px;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        @media (max-width: 800px) {
+            .registration-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .event-banner {
+                min-height: 160px;
+            }
+
+            .container {
+                margin-top: 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 18px 5%;
+            }
+
+            .nav-links {
+                gap: 15px;
+            }
+
+            .form-card {
+                padding: 22px 18px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .page-heading h1 {
+                letter-spacing: -0.8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a href="{{ url_for('dashboard') }}" class="logo">
+            Event<span>AI</span>
+        </a>
+
+        <div class="nav-links">
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('events') }}" class="active">Events</a>
+            <a href="{{ url_for('about') }}">About</a>
+            <a href="{{ url_for('contact') }}">Contact</a>
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <div class="breadcrumb">
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            &nbsp; / &nbsp;
+            <a href="{{ url_for('events') }}">Events</a>
+            &nbsp; / &nbsp;
+            Registration
+        </div>
+
+        <section class="page-heading">
+            <span class="eyebrow">✦ JOIN THE EXPERIENCE</span>
+            <h1>Register for an Event</h1>
+            <p>Complete the form below to register and reserve your place.</p>
+        </section>
+
+        <div class="registration-layout">
+
+            <!-- Event information -->
+            <aside class="event-card">
+                <div class="event-banner" aria-hidden="true">🎟️</div>
+
+                <div class="event-content">
+                    <span class="category">
+                        {{ event.category | default('Featured Event', true) }}
+                    </span>
+
+                    <h2>
+                        {{ event.title | default('Technology Innovation Summit', true) }}
+                    </h2>
+
+                    <p class="event-description">
+                        {{ event.description | default('Join us for an engaging event featuring learning, innovation, and opportunities to connect with other participants.', true) }}
+                    </p>
+
+                    <div class="event-info">
+                        <div class="info-row">
+                            <div class="info-icon">📅</div>
+                            <div class="info-text">
+                                <small>Date</small>
+                                <strong>{{ event.date | default('Date to be announced', true) }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-icon">🕒</div>
+                            <div class="info-text">
+                                <small>Time</small>
+                                <strong>{{ event.time | default('Time to be announced', true) }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-icon">📍</div>
+                            <div class="info-text">
+                                <small>Venue</small>
+                                <strong>{{ event.venue | default('Venue to be announced', true) }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-icon">💳</div>
+                            <div class="info-text">
+                                <small>Registration Fee</small>
+                                <strong>{{ event.price | default('Free', true) }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Registration form -->
+            <section class="form-card">
+                <div class="form-heading">
+                    <h2>Your Registration Details</h2>
+                    <p>Enter your information carefully. Fields marked with * are required.</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="flash-message {{ 'error' if category == 'error' else 'success' }}"
+                                 role="status">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form
+                    id="registrationForm"
+                    action="{{ url_for('register_event', event_id=event.id) if event is defined and event.id is defined else request.path }}"
+                    method="POST"
+                >
+                    {# If Flask-WTF CSRF protection is configured, add its hidden field here. #}
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="full_name">Full Name <span class="required">*</span></label>
+                            <input
+                                type="text"
+                                id="full_name"
+                                name="full_name"
+                                class="form-control"
+                                placeholder="Enter your full name"
+                                value="{{ request.form.get('full_name', '') }}"
+                                autocomplete="name"
+                                maxlength="100"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address <span class="required">*</span></label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                class="form-control"
+                                placeholder="you@example.com"
+                                value="{{ request.form.get('email', '') }}"
+                                autocomplete="email"
+                                maxlength="254"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Phone Number <span class="required">*</span></label>
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                class="form-control"
+                                placeholder="Enter phone number"
+                                value="{{ request.form.get('phone', '') }}"
+                                autocomplete="tel"
+                                pattern="[0-9+() -]{7,20}"
+                                maxlength="20"
+                                title="Enter a valid phone number."
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="organization">College / Organization</label>
+                            <input
+                                type="text"
+                                id="organization"
+                                name="organization"
+                                class="form-control"
+                                placeholder="Enter your college or organization"
+                                value="{{ request.form.get('organization', '') }}"
+                                maxlength="150"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ticket_type">Ticket Type <span class="required">*</span></label>
+                        <select id="ticket_type" name="ticket_type" class="form-control" required>
+                            <option value="">Select a ticket type</option>
+                            <option value="Student"
+                                {% if request.form.get('ticket_type') == 'Student' %}selected{% endif %}>
+                                Student Pass
+                            </option>
+                            <option value="General"
+                                {% if request.form.get('ticket_type') == 'General' %}selected{% endif %}>
+                                General Admission
+                            </option>
+                            <option value="VIP"
+                                {% if request.form.get('ticket_type') == 'VIP' %}selected{% endif %}>
+                                VIP Pass
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="attendees">Number of Attendees <span class="required">*</span></label>
+                        <select id="attendees" name="attendees" class="form-control" required>
+                            <option value="1"
+                                {% if request.form.get('attendees', '1') == '1' %}selected{% endif %}>
+                                1 attendee
+                            </option>
+                            <option value="2"
+                                {% if request.form.get('attendees') == '2' %}selected{% endif %}>
+                                2 attendees
+                            </option>
+                            <option value="3"
+                                {% if request.form.get('attendees') == '3' %}selected{% endif %}>
+                                3 attendees
+                            </option>
+                            <option value="4"
+                                {% if request.form.get('attendees') == '4' %}selected{% endif %}>
+                                4 attendees
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requirements">Special Requirements</label>
+                        <textarea
+                            id="requirements"
+                            name="requirements"
+                            class="form-control"
+                            placeholder="Dietary needs, accessibility requirements, or other requests (optional)"
+                            maxlength="1000"
+                        >{{ request.form.get('requirements', '') }}</textarea>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="terms" name="terms" value="yes" required>
+                        <label for="terms">
+                            I confirm that the details provided are accurate and agree to the event's
+                            <a href="{{ url_for('about') }}">participation guidelines</a>.
+                            <span class="required">*</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitButton">
+                        Confirm Registration →
+                    </button>
+
+                    <p class="secure-note">
+                        🔒 Your information should be handled securely by the EventAI application.
+                        Submitting this form does not guarantee registration until the server confirms it.
+                    </p>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        © 2026 EventAI · AI-Powered Event Management System
+    </footer>
+
+    <script>
+        const registrationForm = document.getElementById('registrationForm');
+        const submitButton = document.getElementById('submitButton');
+
+        registrationForm.addEventListener('submit', function (event) {
+            if (!registrationForm.checkValidity()) {
+                event.preventDefault();
+                registrationForm.reportValidity();
+                return;
+            }
+
+            // Allow the form to reach Flask. Do not show a success message here:
+            // only the server can confirm that the registration was saved.
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
+        });
+    </script>
+
+</body>
+</html>
