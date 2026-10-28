@@ -1,1 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>{{ event.title|default('Event Details') }} | EventAI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0b1020;
+            --panel: #151e33;
+            --panel-light: #1b2740;
+            --border: rgba(255,255,255,0.09);
+            --text: #f4f7ff;
+            --muted: #99a8c3;
+            --purple: #8b5cf6;
+            --cyan: #22d3ee;
+            --green: #34d399;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        .navbar {
+            min-height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 16px 6%;
+            background: rgba(16,23,42,0.95);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .brand-icon {
+            width: 39px;
+            height: 39px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #8b5cf6, #4f46e5);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .nav-links a:hover {
+            color: white;
+        }
+
+        .nav-cta {
+            padding: 10px 15px;
+            border-radius: 9px;
+            color: white !important;
+            background: var(--purple);
+        }
+
+        .container {
+            width: min(1120px, 90%);
+            margin: 0 auto;
+        }
+
+        .breadcrumb {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin: 30px 0 22px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .breadcrumb a:hover {
+            color: #c4b5fd;
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            min-height: 310px;
+            display: flex;
+            align-items: flex-end;
+            padding: 38px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background:
+                radial-gradient(circle at 80% 20%, rgba(34,211,238,0.2), transparent 30%),
+                radial-gradient(circle at 15% 90%, rgba(139,92,246,0.35), transparent 40%),
+                linear-gradient(125deg, #25204b, #14253c 65%, #102d3d);
+        }
+
+        .hero::after {
+            content: "✦";
+            position: absolute;
+            top: 10px;
+            right: 45px;
+            color: rgba(255,255,255,0.07);
+            font-size: 180px;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 760px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 11px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(196,181,253,0.25);
+            border-radius: 30px;
+            background: rgba(139,92,246,0.15);
+            color: #ddd6fe;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero h1 {
+            font-size: clamp(28px, 4vw, 43px);
+            line-height: 1.2;
+            letter-spacing: -1.5px;
+            margin-bottom: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .hero p {
+            max-width: 620px;
+            color: #c0cce0;
+            font-size: 13px;
+        }
+
+        .event-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-top: 23px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #e3e9f7;
+            font-size: 11px;
+        }
+
+        .meta-icon {
+            width: 32px;
+            height: 32px;
+            display: grid;
+            place-items: center;
+            border-radius: 9px;
+            background: rgba(255,255,255,0.09);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.8fr);
+            gap: 24px;
+            align-items: start;
+            margin: 28px 0 55px;
+        }
+
+        .section-card {
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: var(--panel);
+        }
+
+        .section-card h2 {
+            margin-bottom: 17px;
+            font-size: 17px;
+            letter-spacing: -0.4px;
+        }
+
+        .section-card > p {
+            color: #b3bfd4;
+            font-size: 12px;
+            line-height: 1.9;
+            white-space: pre-line;
+        }
+
+        .highlights {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 13px;
+            margin-top: 20px;
+        }
+
+        .highlight {
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #111a2d;
+        }
+
+        .highlight span {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 19px;
+        }
+
+        .highlight h3 {
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        .highlight p {
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .schedule-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .schedule-item:last-child {
+            border-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .schedule-time {
+            min-width: 75px;
+            color: #c4b5fd;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .schedule-info h3 {
+            margin-bottom: 4px;
+            font-size: 12px;
+        }
+
+        .schedule-info p {
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .booking-card {
+            position: sticky;
+            top: 20px;
+        }
+
+        .booking-card h2 {
+            font-size: 18px;
+        }
+
+        .price-label {
+            margin: 14px 0 4px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .price {
+            margin-bottom: 18px;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .price small {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 13px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+        }
+
+        .detail-row:last-of-type {
+            border-bottom: 0;
+        }
+
+        .detail-row span:first-child {
+            color: var(--muted);
+        }
+
+        .detail-row span:last-child {
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
+
+        .register-btn {
+            display: block;
+            width: 100%;
+            margin-top: 22px;
+            padding: 14px;
+            border: 0;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #8b5cf6, #6d4aff);
+            color: white;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139,92,246,0.2);
+        }
+
+        .register-note {
+            margin-top: 12px;
+            color: var(--muted);
+            font-size: 10px;
+            text-align: center;
+        }
+
+        .organizer {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+        }
+
+        .organizer-avatar {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            border-radius: 12px;
+            background: var(--panel-light);
+        }
+
+        .organizer h3 {
+            font-size: 12px;
+        }
+
+        .organizer p {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .flash-message {
+            margin: 18px 0;
+            padding: 12px 15px;
+            border: 1px solid rgba(52,211,153,0.3);
+            border-radius: 10px;
+            background: rgba(52,211,153,0.08);
+            color: #a7f3d0;
+            font-size: 12px;
+        }
+
+        .flash-message.error {
+            border-color: rgba(251,113,133,0.35);
+            background: rgba(251,113,133,0.08);
+            color: #fecdd3;
+        }
+
+        .footer {
+            padding: 25px 10px;
+            border-top: 1px solid var(--border);
+            color: #71809b;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        @media (max-width: 850px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .booking-card {
+                position: static;
+            }
+
+            .hero {
+                padding: 28px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .navbar {
+                padding: 14px 5%;
+            }
+
+            .nav-links {
+                gap: 12px;
+                font-size: 10px;
+            }
+
+            .nav-links .optional-link {
+                display: none;
+            }
+
+            .container {
+                width: 92%;
+            }
+
+            .hero {
+                min-height: 290px;
+                padding: 23px;
+            }
+
+            .event-meta {
+                gap: 12px;
+            }
+
+            .section-card {
+                padding: 19px;
+            }
+
+            .highlights {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <a href="{{ url_for('dashboard') }}" class="brand">
+        <span class="brand-icon">✦</span>
+        <span>EventAI</span>
+    </a>
+
+    <nav class="nav-links">
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('events') }}">Events</a>
+        <a href="{{ url_for('about') }}" class="optional-link">About</a>
+        <a href="{{ url_for('contact') }}" class="nav-cta">Contact</a>
+    </nav>
+</header>
+
+<main class="container">
+
+    <div class="breadcrumb">
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <span>/</span>
+        <a href="{{ url_for('events') }}">Events</a>
+        <span>/</span>
+        <span>{{ event.title|default('Event Details') }}</span>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message {{ 'error' if category == 'error' else '' }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Event banner -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="eyebrow">
+                ✦ {{ event.category|default('Featured Event') }}
+            </span>
+
+            <h1>{{ event.title|default('Technology Innovation Summit') }}</h1>
+
+            <p>
+                {{ event.description|default(
+                    'Discover new ideas, connect with participants, and explore innovative opportunities at this event.'
+                ) }}
+            </p>
+
+            <div class="event-meta">
+                <div class="meta-item">
+                    <span class="meta-icon">📅</span>
+                    <span>{{ event.date|default('Date to be announced') }}</span>
+                </div>
+
+                <div class="meta-item">
+                    <span class="meta-icon">📍</span>
+                    <span>{{ event.venue|default('Venue to be announced') }}</span>
+                </div>
+
+                <div class="meta-item">
+                    <span class="meta-icon">◷</span>
+                    <span>{{ event.time|default('Time to be announced') }}</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="content-grid">
+
+        <!-- Main event information -->
+        <div>
+
+            <section class="section-card">
+                <h2>About This Event</h2>
+
+                <p>{{ event.description|default(
+                    'This event brings together people to share knowledge, exchange ideas, and discover new opportunities. Participants can learn from the sessions, interact with others, and gain practical insights.'
+                ) }}</p>
+
+                <div class="highlights">
+                    <div class="highlight">
+                        <span>🎯</span>
+                        <h3>Learn & Explore</h3>
+                        <p>Discover ideas and gain useful insights.</p>
+                    </div>
+
+                    <div class="highlight">
+                        <span>🤝</span>
+                        <h3>Connect</h3>
+                        <p>Meet people with similar interests.</p>
+                    </div>
+
+                    <div class="highlight">
+                        <span>💡</span>
+                        <h3>Get Inspired</h3>
+                        <p>Explore new approaches and possibilities.</p>
+                    </div>
+
+                    <div class="highlight">
+                        <span>🚀</span>
+                        <h3>Build Skills</h3>
+                        <p>Discover opportunities to grow.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-card">
+                <h2>Event Schedule</h2>
+
+                {% if event.schedule is defined and event.schedule %}
+                    {% for item in event.schedule %}
+                        <div class="schedule-item">
+                            <div class="schedule-time">{{ item.time }}</div>
+                            <div class="schedule-info">
+                                <h3>{{ item.title }}</h3>
+                                <p>{{ item.description|default('Event session') }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="schedule-item">
+                        <div class="schedule-time">09:00 AM</div>
+                        <div class="schedule-info">
+                            <h3>Welcome & Registration</h3>
+                            <p>Participant check-in and introduction.</p>
+                        </div>
+                    </div>
+
+                    <div class="schedule-item">
+                        <div class="schedule-time">10:00 AM</div>
+                        <div class="schedule-info">
+                            <h3>Opening Session</h3>
+                            <p>Introduction to the event and its objectives.</p>
+                        </div>
+                    </div>
+
+                    <div class="schedule-item">
+                        <div class="schedule-time">11:30 AM</div>
+                        <div class="schedule-info">
+                            <h3>Main Activities</h3>
+                            <p>Sessions, discussions, and participant activities.</p>
+                        </div>
+                    </div>
+
+                    <div class="schedule-item">
+                        <div class="schedule-time">03:00 PM</div>
+                        <div class="schedule-info">
+                            <h3>Closing Session</h3>
+                            <p>Summary, feedback, and closing remarks.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </section>
+
+            <section class="section-card">
+                <h2>Location & Venue</h2>
+                <p>
+                    <strong>{{ event.venue|default('Venue to be announced') }}</strong>
+                    {% if event.address is defined and event.address %}
+                        <br>{{ event.address }}
+                    {% else %}
+                        <br>Full venue address will be shared by the event organizer.
+                    {% endif %}
+                </p>
+            </section>
+
+        </div>
+
+        <!-- Registration sidebar -->
+        <aside>
+            <section class="section-card booking-card">
+                <h2>Event Registration</h2>
+
+                <div class="price-label">Registration fee</div>
+                <div class="price">
+                    {{ event.price|default('Free') }}
+                    <small>{{ '/ person' if event.price is defined and event.price != 'Free' else '' }}</small>
+                </div>
+
+                <div class="detail-row">
+                    <span>Event date</span>
+                    <span>{{ event.date|default('TBA') }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span>Start time</span>
+                    <span>{{ event.time|default('TBA') }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span>Category</span>
+                    <span>{{ event.category|default('General') }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span>Venue</span>
+                    <span>{{ event.venue|default('TBA') }}</span>
+                </div>
+
+                {% if event.id is defined %}
+                    <form action="{{ url_for('register_event', event_id=event.id) }}"
+                          method="POST">
+                        <button type="submit" class="register-btn">
+                            Register for Event →
+                        </button>
+                    </form>
+                {% else %}
+                    <button type="button" class="register-btn"
+                            id="registerButton">
+                        Register for Event →
+                    </button>
+                {% endif %}
+
+                <p class="register-note">
+                    Please verify the event details before registering.
+                </p>
+
+                <div class="organizer">
+                    <div class="organizer-avatar">👤</div>
+                    <div>
+                        <h3>{{ event.organizer|default('EventAI Team') }}</h3>
+                        <p>Event organizer</p>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+    </div>
+</main>
+
+<footer class="footer">
+    © <span id="year"></span> EventAI · Smart Event Management
+</footer>
+
+<script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const registerButton = document.getElementById("registerButton");
+
+    if (registerButton) {
+        registerButton.addEventListener("click", function () {
+            alert(
+                "Registration is not connected yet. Please connect this button to your Flask registration route."
+            );
+        });
+    }
+</script>
+
+</body>
+</html>
