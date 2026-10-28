@@ -1,1 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn about AI for Smart Event, an intelligent event management platform.">
+    <title>About Us | AI for Smart Event</title>
+
+    <style>
+        :root {
+            --bg: #0b1020;
+            --surface: #141c31;
+            --surface-light: #1b2640;
+            --primary: #8b7cff;
+            --secondary: #39d9c5;
+            --text: #f5f7ff;
+            --muted: #aab5cf;
+            --border: rgba(255, 255, 255, 0.10);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .container {
+            width: min(1120px, 90%);
+            margin: auto;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(11, 16, 32, 0.94);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-content {
+            min-height: 76px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            background: linear-gradient(135deg, var(--primary), #5a50d6);
+            font-size: 23px;
+        }
+
+        .brand span:last-child {
+            color: var(--secondary);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .nav-links a:hover,
+        .nav-links .active {
+            color: var(--secondary);
+        }
+
+        .nav-button {
+            padding: 10px 17px;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white !important;
+            font-weight: 700;
+        }
+
+        /* Hero section */
+        .hero {
+            position: relative;
+            overflow: hidden;
+            padding: 100px 0 85px;
+            background:
+                radial-gradient(ellipse at 15% 20%, rgba(139, 124, 255, 0.19), transparent 42%),
+                radial-gradient(ellipse at 85% 70%, rgba(57, 217, 197, 0.10), transparent 35%);
+        }
+
+        .hero-content {
+            max-width: 850px;
+            margin: auto;
+            text-align: center;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            padding: 7px 15px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(139, 124, 255, 0.45);
+            border-radius: 30px;
+            color: #c5bdff;
+            background: rgba(139, 124, 255, 0.09);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: clamp(36px, 6vw, 64px);
+            line-height: 1.13;
+            letter-spacing: -2px;
+            margin-bottom: 25px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #a99cff, #55e5d2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-description {
+            max-width: 720px;
+            margin: 0 auto 32px;
+            color: var(--muted);
+            font-size: 17px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .button {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 13px 23px;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            font-weight: 700;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .button:hover {
+            transform: translateY(-3px);
+        }
+
+        .button-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .button-secondary {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        /* Section defaults */
+        section {
+            padding: 76px 0;
+        }
+
+        .section-heading {
+            max-width: 700px;
+            margin: 0 auto 42px;
+            text-align: center;
+        }
+
+        .section-label {
+            margin-bottom: 10px;
+            color: var(--secondary);
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-size: clamp(28px, 4vw, 40px);
+            line-height: 1.25;
+            margin-bottom: 15px;
+        }
+
+        .section-description {
+            color: var(--muted);
+        }
+
+        /* Overview */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            align-items: center;
+            gap: 55px;
+        }
+
+        .overview-text h2 {
+            margin-bottom: 22px;
+        }
+
+        .overview-text p {
+            margin-bottom: 17px;
+            color: var(--muted);
+        }
+
+        .highlight {
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        .overview-panel {
+            padding: 32px;
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            background: linear-gradient(145deg, var(--surface), #10172a);
+        }
+
+        .panel-title {
+            margin-bottom: 23px;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .workflow {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 17px 0;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        .workflow-icon {
+            flex-shrink: 0;
+            width: 45px;
+            height: 45px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: rgba(139, 124, 255, 0.15);
+            font-size: 22px;
+        }
+
+        .workflow h3 {
+            font-size: 15px;
+            margin-bottom: 3px;
+        }
+
+        .workflow p {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        /* Feature cards */
+        .features-section {
+            background: rgba(255, 255, 255, 0.018);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+        }
+
+        .feature-card {
+            padding: 28px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: var(--surface);
+            transition: transform 0.25s, border-color 0.25s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(139, 124, 255, 0.65);
+        }
+
+        .feature-icon {
+            width: 54px;
+            height: 54px;
+            display: grid;
+            place-items: center;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            background: linear-gradient(
+                135deg,
+                rgba(139, 124, 255, 0.22),
+                rgba(57, 217, 197, 0.10)
+            );
+            font-size: 26px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 11px;
+            font-size: 18px;
+        }
+
+        .feature-card p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* Technology stack */
+        .tech-grid {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 13px;
+            margin-top: 30px;
+        }
+
+        .tech-badge {
+            padding: 12px 19px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--surface);
+            color: #dce3fa;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .tech-badge span {
+            margin-right: 7px;
+        }
+
+        .tech-note {
+            max-width: 650px;
+            margin: 25px auto 0;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* Mission and vision */
+        .mission-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 22px;
+        }
+
+        .mission-card {
+            padding: 32px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: var(--surface);
+        }
+
+        .mission-card h3 {
+            margin-bottom: 12px;
+            font-size: 21px;
+        }
+
+        .mission-card p {
+            color: var(--muted);
+        }
+
+        /* Future scope */
+        .future-box {
+            padding: 45px;
+            border: 1px solid rgba(139, 124, 255, 0.3);
+            border-radius: 24px;
+            background:
+                radial-gradient(ellipse at top right, rgba(139, 124, 255, 0.12), transparent 50%),
+                var(--surface);
+            text-align: center;
+        }
+
+        .future-box p {
+            max-width: 740px;
+            margin: 0 auto;
+            color: var(--muted);
+        }
+
+        /* Footer */
+        footer {
+            padding: 30px 0;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a:hover {
+            color: var(--secondary);
+        }
+
+        /* Responsive design */
+        @media (max-width: 850px) {
+            .overview-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .feature-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .nav-links {
+                gap: 14px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .nav-content {
+                padding: 14px 0;
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .nav-links {
+                width: 100%;
+                flex-wrap: wrap;
+                gap: 14px;
+            }
+
+            .nav-button {
+                padding: 7px 11px;
+            }
+
+            .hero {
+                padding: 70px 0 60px;
+            }
+
+            h1 {
+                letter-spacing: -1px;
+            }
+
+            section {
+                padding: 55px 0;
+            }
+
+            .feature-grid,
+            .mission-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .overview-panel,
+            .future-box {
+                padding: 24px;
+            }
+
+            .feature-card {
+                padding: 23px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation bar -->
+    <header class="navbar">
+        <div class="container nav-content">
+
+            <a href="/" class="brand">
+                <span class="brand-icon">✦</span>
+                <span>Event<span>AI</span></span>
+            </a>
+
+            <nav class="nav-links" aria-label="Main navigation">
+                <a href="/">Home</a>
+                <a href="/about" class="active">About</a>
+                <a href="/events">Events</a>
+                <a href="/login" class="nav-button">Get Started</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main>
+
+        <!-- Hero section -->
+        <section class="hero">
+            <div class="container hero-content">
+
+                <div class="eyebrow">About Our Project</div>
+
+                <h1>
+                    Events Made Smarter
+                    <br>
+                    with <span class="gradient-text">Artificial Intelligence</span>
+                </h1>
+
+                <p class="hero-description">
+                    AI for Smart Event is a web application concept designed
+                    to bring event management and intelligent assistance
+                    together in one place. Our goal is to make organizing
+                    and discovering events simpler, more accessible, and
+                    more efficient.
+                </p>
+
+                <div class="button-group">
+                    <a href="/" class="button button-primary">
+                        Explore Home &rarr;
+                    </a>
+
+                    <a href="#features" class="button button-secondary">
+                        Discover Features
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Project overview -->
+        <section>
+            <div class="container overview-grid">
+
+                <div class="overview-text">
+                    <div class="section-label">Project Overview</div>
+
+                    <h2>
+                        One platform for
+                        <span class="gradient-text">smarter event experiences</span>
+                    </h2>
+
+                    <p>
+                        Planning an event can involve several tasks, including
+                        coordinating information, managing registrations,
+                        answering questions, and keeping attendees informed.
+                        Handling these activities manually can become
+                        time-consuming.
+                    </p>
+
+                    <p>
+                        Our project aims to provide a centralized platform
+                        where event-related information and management
+                        activities can be organized. AI assistance can
+                        provide an additional layer of support by helping
+                        users interact with event information more naturally.
+                    </p>
+
+                    <p>
+                        The application combines web development with
+                        AI integration to explore how intelligent software
+                        can improve everyday event management workflows.
+                    </p>
+                </div>
+
+                <div class="overview-panel">
+                    <div class="panel-title">The Idea Behind EventAI</div>
+
+                    <div class="workflow">
+                        <div class="workflow-icon">📅</div>
+                        <div>
+                            <h3>Organize</h3>
+                            <p>Keep event-related information accessible.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow">
+                        <div class="workflow-icon">👥</div>
+                        <div>
+                            <h3>Connect</h3>
+                            <p>Make event information easier to find.</p>
+                        </div>
+                    </div>
+
+                    <div class="workflow">
+                        <div class="workflow-icon">✨</div>
+                        <div>
+                            <h3>Assist</h3>
+                            <p>Explore AI-based support for user questions.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="features-section" id="features">
+            <div class="container">
+
+                <div class="section-heading">
+                    <div class="section-label">What We Aim to Provide</div>
+
+                    <h2>Designed Around Event Needs</h2>
+
+                    <p class="section-description">
+                        The following areas describe the intended capabilities
+                        of the project. Display only the features that are
+                        implemented in your current application.
+                    </p>
+                </div>
+
+                <div class="feature-grid">
+
+                    <article class="feature-card">
+                        <div class="feature-icon">🗓️</div>
+                        <h3>Event Management</h3>
+                        <p>
+                            Provide a structured way to organize event details,
+                            schedules, and other relevant information.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <h3>AI Assistance</h3>
+                        <p>
+                            Integrate an AI assistant to help users with
+                            supported event-related questions and requests.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">🔐</div>
+                        <h3>User Access</h3>
+                        <p>
+                            Support appropriate user authentication and
+                            access to available application features.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">📋</div>
+                        <h3>Information Management</h3>
+                        <p>
+                            Keep relevant event information organized so
+                            users can access it more conveniently.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Simple User Experience</h3>
+                        <p>
+                            Use a clear interface to help users navigate
+                            the application with less confusion.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <h3>Room to Grow</h3>
+                        <p>
+                            Allow future improvements such as analytics,
+                            recommendations, and additional automation.
+                        </p>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Technologies -->
+        <section id="technology">
+            <div class="container">
+
+                <div class="section-heading">
+                    <div class="section-label">Under the Hood</div>
+
+                    <h2>Technology Stack</h2>
+
+                    <p class="section-description">
+                        The project brings together web development,
+                        server-side programming, data management, and
+                        AI integration.
+                    </p>
+                </div>
+
+                <div class="tech-grid">
+
+                    <div class="tech-badge">
+                        <span>🐍</span> Python
+                    </div>
+
+                    <div class="tech-badge">
+                        <span>🌶️</span> Flask
+                    </div>
+
+                    <div class="tech-badge">
+                        <span>🎨</span> HTML5
+                    </div>
+
+                    <div class="tech-badge">
+                        <span>🖌️</span> CSS3
+                    </div>
+
+                    <div class="tech-badge">
+                        <span>⚙️</span> JavaScript
+                    </div>
+
+                    <div class="tech-badge">
+                        <span>🗄️</span> SQLAlchemy
+                    </div>
+
+                    <div class="tech-badge">
+                        <span>✨</span> Google Gemini
+                    </div>
+
+                </div>
+
+                <p class="tech-note">
+                    These are the technologies intended for the project.
+                    Keep a technology listed here only if it is actually
+                    used in your application. Google Gemini features
+                    require a configured API key and working integration.
+                </p>
+
+            </div>
+        </section>
+
+        <!-- Mission and vision -->
+        <section class="features-section">
+            <div class="container">
+
+                <div class="section-heading">
+                    <div class="section-label">Our Direction</div>
+                    <h2>Mission and Vision</h2>
+                </div>
+
+                <div class="mission-grid">
+
+                    <article class="mission-card">
+                        <h3>
+                            <span class="gradient-text">Our Mission</span>
+                        </h3>
+
+                        <p>
+                            To explore how web technologies and AI can make
+                            event-related tasks easier to manage, improve
+                            access to information, and create a more
+                            convenient experience for users.
+                        </p>
+                    </article>
+
+                    <article class="mission-card">
+                        <h3>
+                            <span class="gradient-text">Our Vision</span>
+                        </h3>
+
+                        <p>
+                            To develop the application into a more intelligent
+                            event platform that can support personalized
+                            recommendations, useful insights, and efficient
+                            coordination as the project evolves.
+                        </p>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Future scope -->
+        <section>
+            <div class="container">
+
+                <div class="future-box">
+                    <div class="section-label">Looking Ahead</div>
+
+                    <h2>
+                        More Possibilities with
+                        <span class="gradient-text">AI</span>
+                    </h2>
+
+                    <p>
+                        Future versions could explore personalized event
+                        suggestions, automated reminders, attendee feedback
+                        analysis, intelligent scheduling, and event analytics.
+                        These improvements would be developed and tested
+                        incrementally based on user needs and project scope.
+                    </p>
+
+                    <div class="button-group" style="margin-top: 28px;">
+                        <a href="/" class="button button-primary">
+                            Back to Home &rarr;
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+
+            <p>
+                &copy; <span id="current-year"></span> AI for Smart Event.
+                Built to explore smarter event management.
+            </p>
+
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+            </div>
+
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById("current-year").textContent =
+            new Date().getFullYear();
+    </script>
+
+</body>
+</html>
 
