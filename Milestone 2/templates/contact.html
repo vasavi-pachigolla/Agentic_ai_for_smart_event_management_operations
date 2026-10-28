@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact the AI for Smart Event project team.">
+    <title>Contact Us | AI for Smart Event</title>
+
+    <style>
+        :root {
+            --bg: #0b1020;
+            --surface: #141c31;
+            --surface-light: #1b2640;
+            --primary: #8b7cff;
+            --secondary: #39d9c5;
+            --text: #f5f7ff;
+            --muted: #aab5cf;
+            --border: rgba(255, 255, 255, 0.10);
+            --danger: #ff8585;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        input,
+        textarea,
+        select,
+        button {
+            font: inherit;
+        }
+
+        .container {
+            width: min(1120px, 92%);
+            margin: auto;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(11, 16, 32, 0.96);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-content {
+            min-height: 75px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            background: linear-gradient(135deg, var(--primary), #5a50d6);
+            font-size: 23px;
+        }
+
+        .brand-name span {
+            color: var(--secondary);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .nav-links a:hover,
+        .nav-links .active {
+            color: var(--secondary);
+        }
+
+        .nav-button {
+            padding: 10px 17px;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white !important;
+            font-weight: 700;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 70px 0 45px;
+            background:
+                radial-gradient(ellipse at 15% 20%,
+                    rgba(139, 124, 255, 0.18), transparent 42%),
+                radial-gradient(ellipse at 90% 60%,
+                    rgba(57, 217, 197, 0.09), transparent 35%);
+        }
+
+        .hero-content {
+            max-width: 760px;
+            text-align: center;
+            margin: auto;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            padding: 6px 14px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(139, 124, 255, 0.4);
+            border-radius: 30px;
+            background: rgba(139, 124, 255, 0.08);
+            color: #c5bdff;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: clamp(36px, 5vw, 55px);
+            line-height: 1.15;
+            letter-spacing: -1.5px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #a99cff, #55e5d2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            max-width: 680px;
+            margin: auto;
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        /* Main layout */
+        .contact-section {
+            padding: 25px 0 80px;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 0.85fr 1.15fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        .contact-info,
+        .contact-form {
+            padding: 32px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: var(--surface);
+        }
+
+        .section-label {
+            margin-bottom: 10px;
+            color: var(--secondary);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+        }
+
+        .contact-info h2,
+        .contact-form h2 {
+            margin-bottom: 14px;
+            font-size: 27px;
+            line-height: 1.3;
+        }
+
+        .intro-text {
+            margin-bottom: 27px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* Information cards */
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-top: 17px;
+            padding: 17px;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        .info-icon {
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: rgba(139, 124, 255, 0.15);
+            font-size: 21px;
+        }
+
+        .info-item h3 {
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .info-item p,
+        .info-item a {
+            overflow-wrap: anywhere;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .info-item a:hover {
+            color: var(--secondary);
+        }
+
+        .response-note {
+            margin-top: 23px;
+            padding: 16px;
+            border-left: 3px solid var(--secondary);
+            border-radius: 5px;
+            background: rgba(57, 217, 197, 0.06);
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* Form */
+        .contact-form .intro-text {
+            margin-bottom: 23px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 19px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #e4e9fb;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            background: #0e1528;
+            color: var(--text);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input,
+        .form-group select {
+            min-height: 48px;
+        }
+
+        .form-group textarea {
+            min-height: 145px;
+            resize: vertical;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #7784a2;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 124, 255, 0.12);
+        }
+
+        .form-group select option {
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .required {
+            color: var(--secondary);
+        }
+
+        .submit-button {
+            width: 100%;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 13px 20px;
+            border: none;
+            border-radius: 11px;
+            background: linear-gradient(100deg, var(--primary), #7060e9);
+            color: white;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .privacy-note {
+            margin-top: 15px;
+            color: var(--muted);
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .form-message {
+            display: none;
+            margin-bottom: 20px;
+            padding: 13px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .form-message.success {
+            display: block;
+            border: 1px solid rgba(57, 217, 197, 0.3);
+            background: rgba(57, 217, 197, 0.08);
+            color: var(--secondary);
+        }
+
+        .form-message.error {
+            display: block;
+            border: 1px solid rgba(255, 133, 133, 0.3);
+            background: rgba(255, 133, 133, 0.08);
+            color: var(--danger);
+        }
+
+        /* Footer */
+        footer {
+            padding: 27px 0;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+        }
+
+        .footer-links a:hover {
+            color: var(--secondary);
+        }
+
+        @media (max-width: 850px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-info,
+            .contact-form {
+                padding: 26px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .nav-content {
+                padding: 14px 0;
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .nav-links {
+                width: 100%;
+                flex-wrap: wrap;
+                gap: 13px;
+            }
+
+            .hero {
+                padding: 48px 0 35px;
+            }
+
+            .contact-section {
+                padding-bottom: 50px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .contact-info,
+            .contact-form {
+                padding: 21px;
+            }
+
+            .footer-content {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <header class="navbar">
+        <div class="container nav-content">
+
+            <a href="/" class="brand">
+                <span class="brand-icon">✦</span>
+                <span class="brand-name">Event<span>AI</span></span>
+            </a>
+
+            <nav class="nav-links" aria-label="Main navigation">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/events">Browse Events</a>
+                <a href="/contact" class="active">Contact</a>
+                <a href="/login" class="nav-button">Get Started</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main>
+
+        <!-- Page introduction -->
+        <section class="hero">
+            <div class="container hero-content">
+
+                <div class="eyebrow">We're Here to Help</div>
+
+                <h1>
+                    Let's Start a
+                    <span class="gradient-text">Conversation.</span>
+                </h1>
+
+                <p>
+                    Have a question, suggestion, or idea to share?
+                    We'd love to hear from you. Send us a message using
+                    the form below and help us improve the AI for Smart
+                    Event experience.
+                </p>
+
+            </div>
+        </section>
+
+        <!-- Contact section -->
+        <section class="contact-section">
+            <div class="container contact-grid">
+
+                <!-- Contact information -->
+                <aside class="contact-info">
+
+                    <div class="section-label">Get in Touch</div>
+
+                    <h2>Contact Information</h2>
+
+                    <p class="intro-text">
+                        Whether you need help with the application or want
+                        to share feedback about the project, use the details
+                        below or send a message through the contact form.
+                    </p>
+
+                    <div class="info-item">
+                        <div class="info-icon" aria-hidden="true">✉️</div>
+                        <div>
+                            <h3>Email</h3>
+                            <p>
+                                Replace this text with your project email.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon" aria-hidden="true">📍</div>
+                        <div>
+                            <h3>Location</h3>
+                            <p>
+                                Add your institution, team, or organization
+                                location here if appropriate.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon" aria-hidden="true">💬</div>
+                        <div>
+                            <h3>Project Support</h3>
+                            <p>
+                                Questions, feedback, suggestions, and
+                                project-related enquiries are welcome.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="response-note">
+                        <strong>Our goal</strong>
+                        <p>
+                            We aim to make event management simpler and
+                            continuously improve the application based
+                            on useful feedback.
+                        </p>
+                    </div>
+
+                </aside>
+
+                <!-- Contact form -->
+                <section class="contact-form">
+
+                    <div class="section-label">Send a Message</div>
+
+                    <h2>We'd Love to Hear from You</h2>
+
+                    <p class="intro-text">
+                        Fill in the details below. Fields marked with
+                        <span class="required">*</span> are required.
+                    </p>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="form-message {{ 'success' if category == 'success' else 'error' }}"
+                                     role="status">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <div id="clientMessage"
+                         class="form-message"
+                         role="status"
+                         aria-live="polite"></div>
+
+                    <form id="contactForm" action="/contact" method="POST">
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+                                <label for="name">
+                                    Full Name <span class="required">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    placeholder="Enter your full name"
+                                    minlength="2"
+                                    maxlength="100"
+                                    autocomplete="name"
+                                    required
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">
+                                    Email Address <span class="required">*</span>
+                                </label>
+
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    placeholder="you@example.com"
+                                    maxlength="254"
+                                    autocomplete="email"
+                                    required
+                                >
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subject">
+                                Subject <span class="required">*</span>
+                            </label>
+
+                            <select id="subject" name="subject" required>
+                                <option value="" disabled selected>
+                                    Choose a subject
+                                </option>
+                                <option value="General Enquiry">
+                                    General Enquiry
+                                </option>
+                                <option value="Technical Support">
+                                    Technical Support
+                                </option>
+                                <option value="Event Related Question">
+                                    Event Related Question
+                                </option>
+                                <option value="Feedback or Suggestion">
+                                    Feedback or Suggestion
+                                </option>
+                                <option value="Collaboration">
+                                    Collaboration
+                                </option>
+                                <option value="Other">
+                                    Other
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">
+                                Your Message <span class="required">*</span>
+                            </label>
+
+                            <textarea
+                                id="message"
+                                name="message"
+                                placeholder="Tell us how we can help..."
+                                minlength="10"
+                                maxlength="3000"
+                                required
+                            ></textarea>
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="submit-button"
+                            id="submitButton"
+                        >
+                            Send Message <span aria-hidden="true">➜</span>
+                        </button>
+
+                        <p class="privacy-note">
+                            Please do not include passwords or other
+                            sensitive personal information.
+                        </p>
+
+                    </form>
+
+                </section>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+
+            <p>
+                &copy; <span id="currentYear"></span>
+                AI for Smart Event. All rights reserved.
+            </p>
+
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/events">Browse Events</a>
+                <a href="/contact">Contact</a>
+            </div>
+
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById("currentYear").textContent =
+            new Date().getFullYear();
+
+        const contactForm = document.getElementById("contactForm");
+        const clientMessage = document.getElementById("clientMessage");
+        const submitButton = document.getElementById("submitButton");
+
+        contactForm.addEventListener("submit", function(event) {
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const subject = document.getElementById("subject").value;
+            const message = document.getElementById("message").value.trim();
+
+            clientMessage.className = "form-message";
+            clientMessage.textContent = "";
+
+            if (!name || !email || !subject || !message) {
+                event.preventDefault();
+
+                clientMessage.textContent =
+                    "Please complete all required fields.";
+
+                clientMessage.classList.add("error");
+                return;
+            }
+
+            if (name.length < 2 || message.length < 10) {
+                event.preventDefault();
+
+                clientMessage.textContent =
+                    "Please enter a valid name and a message of at least 10 characters.";
+
+                clientMessage.classList.add("error");
+                return;
+            }
+
+            /*
+             * The form is submitted to Flask.
+             * Flask must implement POST /contact to process the message.
+             */
+            submitButton.disabled = true;
+            submitButton.textContent = "Sending...";
+        });
+    </script>
+
+</body>
+</html>
