@@ -1,0 +1,490 @@
+{% extends "base.html" %}
+
+{% block title %}AI Assistant — EventOps AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --assistant-bg: #0b1020;
+        --assistant-surface: #141c31;
+        --assistant-surface-light: #1c2740;
+        --assistant-primary: #8b5cf6;
+        --assistant-secondary: #22d3ee;
+        --assistant-text: #f1f5f9;
+        --assistant-muted: #94a3b8;
+        --assistant-border: rgba(148, 163, 184, 0.18);
+    }
+
+    body {
+        background: var(--assistant-bg) !important;
+        color: var(--assistant-text) !important;
+    }
+
+    .chat-wrapper {
+        max-width: 920px;
+        margin: 1.5rem auto 2.5rem;
+    }
+
+    .chat-container {
+        background: rgba(20, 28, 49, 0.95);
+        border: 1px solid var(--assistant-border);
+        border-radius: 1.5rem;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 75vh;
+        backdrop-filter: blur(12px);
+    }
+
+    .chat-header {
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(34, 211, 238, 0.12)), var(--assistant-surface-light);
+        border-bottom: 1px solid var(--assistant-border);
+        color: var(--assistant-text);
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .chat-header .left {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .chat-header .left i {
+        font-size: 2rem;
+        color: var(--assistant-secondary);
+        filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.3));
+    }
+
+    .chat-header h5 {
+        color: var(--assistant-text);
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+
+    .chat-header small {
+        color: var(--assistant-muted);
+    }
+
+    .chat-header .actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .chat-header .actions button {
+        background: rgba(139, 92, 246, 0.12);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        color: #c4b5fd;
+        padding: 0.35rem 0.9rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: 0.2s;
+        cursor: pointer;
+    }
+
+    .chat-header .actions button:hover {
+        background: rgba(139, 92, 246, 0.25);
+        color: #fff;
+    }
+
+    .quick-actions {
+        padding: 0.75rem 1.5rem;
+        background: rgba(15, 23, 42, 0.65);
+        border-bottom: 1px solid var(--assistant-border);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .quick-actions button {
+        background: var(--assistant-surface-light);
+        border: 1px solid var(--assistant-border);
+        border-radius: 20px;
+        padding: 0.35rem 0.9rem;
+        font-size: 0.78rem;
+        transition: 0.2s;
+        color: var(--assistant-muted);
+        cursor: pointer;
+    }
+
+    .quick-actions button:hover {
+        background: rgba(139, 92, 246, 0.2);
+        border-color: var(--assistant-primary);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    .chat-messages {
+        flex: 1;
+        padding: 1.5rem;
+        overflow-y: auto;
+        background: #0e1528;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .message {
+        max-width: 80%;
+        padding: 0.9rem 1.25rem;
+        border-radius: 1.1rem;
+        line-height: 1.6;
+        word-wrap: break-word;
+        position: relative;
+        animation: fadeIn 0.3s ease;
+        font-size: 0.92rem;
+    }
+
+    .message.user {
+        align-self: flex-end;
+        background: linear-gradient(135deg, #7c3aed, #4f46e5);
+        color: #ffffff;
+        border-bottom-right-radius: 0.25rem;
+        box-shadow: 0 4px 15px rgba(124, 58, 237, 0.25);
+    }
+
+    .message.assistant {
+        align-self: flex-start;
+        background: var(--assistant-surface-light);
+        color: var(--assistant-text);
+        border: 1px solid var(--assistant-border);
+        border-bottom-left-radius: 0.25rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .message .time {
+        font-size: 0.65rem;
+        margin-top: 0.4rem;
+        display: block;
+        text-align: right;
+    }
+
+    .message.assistant .time {
+        color: var(--assistant-muted);
+    }
+
+    .message.user .time {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .message.assistant .copy-btn {
+        position: absolute;
+        top: 0.4rem;
+        right: 0.6rem;
+        background: none;
+        border: none;
+        opacity: 0;
+        transition: opacity 0.2s;
+        color: var(--assistant-muted);
+        font-size: 0.85rem;
+        cursor: pointer;
+    }
+
+    .message.assistant:hover .copy-btn {
+        opacity: 1;
+    }
+
+    .message.assistant .copy-btn:hover {
+        color: var(--assistant-secondary);
+    }
+
+    .message ul {
+        padding-left: 1.4rem;
+        margin-bottom: 0;
+    }
+
+    .message li {
+        margin-bottom: 0.25rem;
+    }
+
+    .typing-indicator {
+        display: none;
+        align-self: flex-start;
+        background: var(--assistant-surface-light);
+        border: 1px solid var(--assistant-border);
+        padding: 0.8rem 1.2rem;
+        border-radius: 1rem;
+        color: var(--assistant-muted);
+    }
+
+    .typing-indicator span {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background: var(--assistant-secondary);
+        border-radius: 50%;
+        margin: 0 2px;
+        animation: bounce 1.4s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bounce {
+        0%, 60%, 100% { transform: translateY(0); }
+        30% { transform: translateY(-4px); }
+    }
+
+    .chat-input {
+        padding: 1rem 1.5rem;
+        background: var(--assistant-surface);
+        border-top: 1px solid var(--assistant-border);
+        display: flex;
+        gap: 0.8rem;
+    }
+
+    .chat-input input {
+        flex: 1;
+        padding: 0.85rem 1.25rem;
+        background: #0a0f1d;
+        color: var(--assistant-text);
+        border: 1px solid var(--assistant-border);
+        border-radius: 50px;
+        outline: none;
+        font-size: 0.9rem;
+        transition: 0.2s;
+    }
+
+    .chat-input input::placeholder {
+        color: #475569;
+    }
+
+    .chat-input input:focus {
+        border-color: var(--assistant-primary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+    }
+
+    .chat-input button {
+        padding: 0.85rem 1.6rem;
+        border: none;
+        border-radius: 50px;
+        background: linear-gradient(135deg, var(--assistant-primary), #6366f1);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .chat-input button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.35);
+    }
+
+    .chat-input button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    @media (max-width: 576px) {
+        .chat-container { height: 83vh; border-radius: 1rem; }
+        .message { max-width: 90%; }
+        .quick-actions button { font-size: 0.72rem; padding: 0.25rem 0.7rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-3 chat-wrapper">
+    <div class="chat-container">
+        <!-- Header -->
+        <div class="chat-header">
+            <div class="left">
+                <i class="bi bi-robot"></i>
+                <div>
+                    <h5 class="mb-0">EventOps AI Assistant</h5>
+                    <small>Powered by Gemini Flash</small>
+                </div>
+            </div>
+            <div class="actions">
+                <button id="clearChatBtn" title="Clear chat history"><i class="bi bi-trash"></i> Clear</button>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions" id="quickActions">
+            <button class="qa-btn" data-msg="Show me upcoming events">📅 Upcoming Events</button>
+            <button class="qa-btn" data-msg="Show my registrations">📋 My Registrations</button>
+            <button class="qa-btn" data-msg="List all venues">🏢 Venues</button>
+            <button class="qa-btn" data-msg="List all speakers">🎤 Speakers</button>
+            <button class="qa-btn" data-msg="Remind me about the AI Summit 1 hour before">⏰ Set Reminder</button>
+        </div>
+
+        <!-- Messages -->
+        <div class="chat-messages" id="chatMessages">
+            <div class="message assistant" id="welcomeMsg">
+                👋 Hello! I'm your EventOps AI assistant. I can help you with event details, registrations, venues, speakers, and reminders. Ask a question or click any quick action above!
+                <span class="time">{{ now.strftime('%I:%M %p') }}</span>
+            </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator">
+            <span></span><span></span><span></span>
+        </div>
+
+        <!-- Input -->
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Type your question..." autofocus>
+            <button id="sendBtn"><i class="bi bi-send"></i> Send</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function() {
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const clearBtn = document.getElementById('clearChatBtn');
+
+        function getTimestamp() {
+            const now = new Date();
+            return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function formatMessage(text) {
+            let formatted = text.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+            if (!formatted.includes('<ul>')) {
+                formatted = formatted.replace(/\n/g, '<br>');
+            }
+            return formatted;
+        }
+
+        function appendMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}`;
+
+            const lines = text.split('\n');
+            const hasBullets = lines.some(line => line.trim().startsWith('•') || line.trim().startsWith('-'));
+            if (hasBullets) {
+                const ul = document.createElement('ul');
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (trimmed) {
+                        const li = document.createElement('li');
+                        li.innerHTML = formatMessage(trimmed.replace(/^[•\-]\s*/, ''));
+                        ul.appendChild(li);
+                    }
+                });
+                div.appendChild(ul);
+            } else {
+                div.innerHTML = formatMessage(text);
+            }
+
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'time';
+            timeSpan.textContent = getTimestamp();
+            div.appendChild(timeSpan);
+
+            if (sender === 'assistant') {
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-btn';
+                copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+                copyBtn.title = 'Copy to clipboard';
+                copyBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    navigator.clipboard.writeText(text).then(() => {
+                        copyBtn.innerHTML = '<i class="bi bi-check2"></i>';
+                        setTimeout(() => {
+                            copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+                        }, 2000);
+                    });
+                });
+                div.appendChild(copyBtn);
+            }
+
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTyping() {
+            typingIndicator.style.display = 'block';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function hideTyping() {
+            typingIndicator.style.display = 'none';
+        }
+
+        function setInputEnabled(enabled) {
+            userInput.disabled = !enabled;
+            sendBtn.disabled = !enabled;
+        }
+
+        async function sendMessage(message) {
+            if (!message || !message.trim()) return;
+            const msg = message.trim();
+            userInput.value = '';
+            appendMessage(msg, 'user');
+            showTyping();
+            setInputEnabled(false);
+
+            try {
+                const response = await fetch('/api/assistant', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+                const data = await response.json();
+                hideTyping();
+                if (data.error) {
+                    appendMessage('❌ ' + data.error, 'assistant');
+                } else {
+                    appendMessage(data.reply, 'assistant');
+                }
+            } catch (error) {
+                hideTyping();
+                appendMessage('⚠️ Sorry, I encountered an error. Please try again.', 'assistant');
+            } finally {
+                setInputEnabled(true);
+                userInput.focus();
+            }
+        }
+
+        sendBtn.addEventListener('click', function() {
+            sendMessage(userInput.value);
+        });
+
+        userInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage(userInput.value);
+            }
+        });
+
+        document.querySelectorAll('.qa-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const msg = this.getAttribute('data-msg');
+                sendMessage(msg);
+            });
+        });
+
+        clearBtn.addEventListener('click', function() {
+            const welcome = document.getElementById('welcomeMsg');
+            chatMessages.innerHTML = '';
+            const welcomeClone = welcome.cloneNode(true);
+            welcomeClone.id = 'welcomeMsg';
+            const timeSpan = welcomeClone.querySelector('.time');
+            if (timeSpan) timeSpan.textContent = getTimestamp();
+            chatMessages.appendChild(welcomeClone);
+        });
+
+        userInput.focus();
+    })();
+</script>
+{% endblock %}
