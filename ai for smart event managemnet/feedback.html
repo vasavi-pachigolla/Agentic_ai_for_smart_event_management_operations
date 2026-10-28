@@ -243,7 +243,7 @@
             border: 1px solid rgba(52, 211, 153, 0.25);
         }
 
-        .flash-message.error {
+        .flash-message.error, .flash-message.danger {
             color: var(--red);
             background: rgba(251, 113, 133, 0.1);
             border: 1px solid rgba(251, 113, 133, 0.25);
@@ -286,8 +286,9 @@
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
         }
 
-        select.form-control option {
-            background: var(--panel);
+        .form-control:read-only {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
 
         textarea.form-control {
@@ -352,61 +353,6 @@
             min-height: 18px;
         }
 
-        .recommendation {
-            padding: 18px;
-            border: 1px solid var(--border);
-            border-radius: 13px;
-            margin-bottom: 22px;
-        }
-
-        .recommendation-options {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 13px;
-        }
-
-        .recommendation-option {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 12px;
-            background: #0e172a;
-            border: 1px solid var(--border);
-            border-radius: 9px;
-            color: var(--muted);
-            font-size: 11px;
-            cursor: pointer;
-        }
-
-        .recommendation-option:has(input:checked) {
-            border-color: var(--purple);
-            color: var(--text);
-            background: rgba(139, 92, 246, 0.1);
-        }
-
-        .recommendation-option input {
-            accent-color: var(--purple);
-        }
-
-        .checkbox-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            margin-bottom: 23px;
-        }
-
-        .checkbox-row input {
-            margin-top: 3px;
-            accent-color: var(--purple);
-        }
-
-        .checkbox-row label {
-            color: var(--muted);
-            font-size: 11px;
-            line-height: 1.8;
-        }
-
         .submit-btn {
             width: 100%;
             border: none;
@@ -431,14 +377,6 @@
             transform: none;
         }
 
-        .privacy-note {
-            margin-top: 15px;
-            color: var(--muted);
-            font-size: 10px;
-            text-align: center;
-            line-height: 1.8;
-        }
-
         .footer {
             margin-top: 45px;
             padding: 25px 15px;
@@ -452,41 +390,8 @@
             .feedback-layout {
                 grid-template-columns: 1fr;
             }
-
             .illustration {
                 min-height: 130px;
-            }
-        }
-
-        @media (max-width: 500px) {
-            .navbar {
-                padding: 18px 5%;
-            }
-
-            .nav-links {
-                gap: 13px;
-            }
-
-            .nav-links a {
-                font-size: 11px;
-            }
-
-            .container {
-                margin-top: 30px;
-            }
-
-            .form-card,
-            .info-card {
-                padding: 22px 18px;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-                gap: 0;
-            }
-
-            .star {
-                font-size: 30px;
             }
         }
     </style>
@@ -502,8 +407,8 @@
         <div class="nav-links">
             <a href="{{ url_for('dashboard') }}">Dashboard</a>
             <a href="{{ url_for('events') }}">Events</a>
-            <a href="{{ url_for('user_registrations') }}">My Registrations</a>
-            <a href="{{ url_for('feedback') }}" class="active">Feedback</a>
+            <a href="{{ url_for('user_my_registrations') }}">My Registrations</a>
+            <a href="{{ url_for('feedback_list') }}" class="active">My Feedback</a>
             <a href="{{ url_for('contact') }}">Contact</a>
         </div>
     </nav>
@@ -512,15 +417,16 @@
 
         <div class="breadcrumb">
             <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            &nbsp; / &nbsp;
+            <a href="{{ url_for('event_detail', event_id=event.id) }}">{{ event.title }}</a>
             &nbsp; / &nbsp; Feedback
         </div>
 
         <section class="hero">
             <span class="eyebrow">✦ HELP US IMPROVE</span>
-            <h1>Your Feedback <span>Matters</span></h1>
+            <h1>Feedback for <span>{{ event.title }}</span></h1>
             <p>
-                Tell us about your experience with EventAI. Your suggestions can help
-                us improve event discovery, registration, planning, and the overall experience.
+                Tell us about your experience with this event. Your ratings and comments help improve future events.
             </p>
         </section>
 
@@ -530,34 +436,23 @@
             <aside class="info-card">
                 <div class="illustration" aria-hidden="true">💬</div>
 
-                <h2>Help us build a better event experience.</h2>
-
-                <p>
-                    Whether you attended an event, used our planning tools, or explored
-                    the platform, we would love to hear what worked well and what could improve.
-                </p>
+                <h2>{{ event.title }}</h2>
+                <p>{{ event.description or 'No description provided.' }}</p>
+                <p><small style="color: var(--cyan);">📅 {{ event.date or 'TBD' }} &bull; 📍 {{ event.location or 'TBD' }}</small></p>
 
                 <div class="benefit">
                     <div class="benefit-icon">⭐</div>
                     <div>
                         <h3>Rate Your Experience</h3>
-                        <p>Tell us how satisfied you were with the platform or event.</p>
+                        <p>Share a star rating from 1 to 5.</p>
                     </div>
                 </div>
 
                 <div class="benefit">
                     <div class="benefit-icon">💡</div>
                     <div>
-                        <h3>Share Your Ideas</h3>
-                        <p>Suggest features and improvements that would help you.</p>
-                    </div>
-                </div>
-
-                <div class="benefit">
-                    <div class="benefit-icon">🚀</div>
-                    <div>
-                        <h3>Improve EventAI</h3>
-                        <p>Your feedback can guide future updates and enhancements.</p>
+                        <h3>Leave Constructive Notes</h3>
+                        <p>Let the organizers know what went well and what can be improved.</p>
                     </div>
                 </div>
             </aside>
@@ -565,71 +460,33 @@
             <!-- Feedback form -->
             <section class="form-card">
                 <div class="form-heading">
-                    <h2>Share Your Feedback</h2>
-                    <p>Complete the form below. Fields marked with * are required.</p>
+                    <h2>{{ 'Update Your Feedback' if existing else 'Submit Your Feedback' }}</h2>
+                    <p>Fields marked with * are required.</p>
                 </div>
 
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, message in messages %}
-                            <div class="flash-message {{ 'error' if category == 'error' else 'success' }}"
-                                 role="status">
+                            <div class="flash-message {{ 'error' if category in ['error', 'danger'] else 'success' }}" role="status">
                                 {{ message }}
                             </div>
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
 
-                <form id="feedbackForm"
-                      action="{{ url_for('feedback') }}"
-                      method="POST">
-
-                    {# Add a CSRF token here if your Flask app uses Flask-WTF. #}
+                <form id="feedbackForm" action="{{ url_for('feedback', event_id=event.id) }}" method="POST">
+                    {{ form.csrf_token }}
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="name">Your Name <span class="required">*</span></label>
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                class="form-control"
-                                placeholder="Enter your name"
-                                value="{{ request.form.get('name', '') }}"
-                                maxlength="100"
-                                autocomplete="name"
-                                required
-                            >
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" class="form-control" value="{{ current_user.name }}" readonly>
                         </div>
 
                         <div class="form-group">
-                            <label for="email">Email Address <span class="required">*</span></label>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                class="form-control"
-                                placeholder="you@example.com"
-                                value="{{ request.form.get('email', '') }}"
-                                maxlength="254"
-                                autocomplete="email"
-                                required
-                            >
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" class="form-control" value="{{ current_user.email }}" readonly>
                         </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="feedback_type">Feedback Category <span class="required">*</span></label>
-                        <select id="feedback_type" name="feedback_type" class="form-control" required>
-                            <option value="">Choose a category</option>
-                            <option value="Platform Experience">Platform Experience</option>
-                            <option value="Event Organization">Event Organization</option>
-                            <option value="Registration Process">Registration Process</option>
-                            <option value="AI Features">AI Features</option>
-                            <option value="Bug Report">Bug Report</option>
-                            <option value="Feature Suggestion">Feature Suggestion</option>
-                            <option value="Other">Other</option>
-                        </select>
                     </div>
 
                     <div class="rating-section">
@@ -638,23 +495,18 @@
                         </span>
 
                         <p class="rating-hint">
-                            Select between one and five stars to rate your experience.
+                            Select between one and five stars.
                         </p>
 
                         <div class="stars" id="starRating" role="group" aria-label="Overall rating">
-                            <button type="button" class="star" data-rating="1"
-                                    aria-label="1 star" aria-pressed="false">★</button>
-                            <button type="button" class="star" data-rating="2"
-                                    aria-label="2 stars" aria-pressed="false">★</button>
-                            <button type="button" class="star" data-rating="3"
-                                    aria-label="3 stars" aria-pressed="false">★</button>
-                            <button type="button" class="star" data-rating="4"
-                                    aria-label="4 stars" aria-pressed="false">★</button>
-                            <button type="button" class="star" data-rating="5"
-                                    aria-label="5 stars" aria-pressed="false">★</button>
+                            <button type="button" class="star" data-rating="1">★</button>
+                            <button type="button" class="star" data-rating="2">★</button>
+                            <button type="button" class="star" data-rating="3">★</button>
+                            <button type="button" class="star" data-rating="4">★</button>
+                            <button type="button" class="star" data-rating="5">★</button>
                         </div>
 
-                        <div class="rating-result" id="ratingResult" aria-live="polite">
+                        <div class="rating-result" id="ratingResult">
                             Please select a rating
                         </div>
 
@@ -662,95 +514,25 @@
                             type="hidden"
                             name="rating"
                             id="rating"
-                            value="{{ request.form.get('rating', '') }}"
+                            value="{{ existing.rating if existing else '' }}"
                             required
                         >
                     </div>
 
                     <div class="form-group">
-                        <label for="event_name">Event Name (Optional)</label>
-                        <input
-                            type="text"
-                            id="event_name"
-                            name="event_name"
-                            class="form-control"
-                            placeholder="Which event is your feedback about?"
-                            value="{{ request.form.get('event_name', '') }}"
-                            maxlength="150"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="subject">Feedback Subject <span class="required">*</span></label>
-                        <input
-                            type="text"
-                            id="subject"
-                            name="subject"
-                            class="form-control"
-                            placeholder="Briefly describe your feedback"
-                            value="{{ request.form.get('subject', '') }}"
-                            maxlength="150"
-                            required
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="message">Your Comments <span class="required">*</span></label>
+                        <label for="comment">Your Comments (Optional)</label>
                         <textarea
-                            id="message"
-                            name="message"
+                            id="comment"
+                            name="comment"
                             class="form-control"
-                            placeholder="What did you like? What could we improve?"
-                            minlength="10"
+                            placeholder="Share your thoughts about this event..."
                             maxlength="2000"
-                            required
-                        >{{ request.form.get('message', '') }}</textarea>
-                        <p class="rating-hint" style="margin-top: 7px;">
-                            Please provide at least 10 characters.
-                            <span id="characterCount">0 / 2000</span>
-                        </p>
-                    </div>
-
-                    <div class="recommendation">
-                        <span class="field-label">
-                            Would you recommend EventAI to others?
-                        </span>
-
-                        <div class="recommendation-options">
-                            <label class="recommendation-option">
-                                <input type="radio" name="recommend" value="Yes">
-                                Yes
-                            </label>
-
-                            <label class="recommendation-option">
-                                <input type="radio" name="recommend" value="Maybe">
-                                Maybe
-                            </label>
-
-                            <label class="recommendation-option">
-                                <input type="radio" name="recommend" value="No">
-                                No
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="checkbox-row">
-                        <input type="checkbox" id="honest_feedback" name="honest_feedback"
-                               value="yes" required>
-                        <label for="honest_feedback">
-                            I confirm that this feedback reflects my genuine experience.
-                            <span class="required">*</span>
-                        </label>
+                        >{{ existing.comment if existing else '' }}</textarea>
                     </div>
 
                     <button type="submit" class="submit-btn" id="submitButton">
-                        Submit Feedback →
+                        {{ 'Update Feedback →' if existing else 'Submit Feedback →' }}
                     </button>
-
-                    <p class="privacy-note">
-                        Your feedback should be stored and handled securely.
-                        Avoid including passwords or other sensitive personal information.
-                    </p>
                 </form>
             </section>
 
@@ -766,91 +548,51 @@
         const ratingInput = document.getElementById('rating');
         const ratingResult = document.getElementById('ratingResult');
         const feedbackForm = document.getElementById('feedbackForm');
-        const messageInput = document.getElementById('message');
-        const characterCount = document.getElementById('characterCount');
         const submitButton = document.getElementById('submitButton');
 
         const ratingLabels = {
-            1: 'Poor — needs significant improvement',
-            2: 'Fair — room for improvement',
-            3: 'Good — a satisfactory experience',
-            4: 'Very Good — a great experience',
-            5: 'Excellent — an outstanding experience'
+            1: 'Poor (1/5)',
+            2: 'Fair (2/5)',
+            3: 'Good (3/5)',
+            4: 'Very Good (4/5)',
+            5: 'Excellent (5/5)'
         };
 
         let selectedRating = Number(ratingInput.value) || 0;
 
         function renderStars(rating) {
-            starButtons.forEach(function (button) {
+            starButtons.forEach(button => {
                 const value = Number(button.dataset.rating);
-                const active = value <= rating;
-
-                button.classList.toggle('selected', active);
-                button.setAttribute(
-                    'aria-pressed',
-                    String(value === selectedRating)
-                );
+                button.classList.toggle('selected', value <= rating);
             });
         }
 
         function selectRating(rating) {
             selectedRating = rating;
             ratingInput.value = String(rating);
-            ratingResult.textContent = ratingLabels[rating];
+            ratingResult.textContent = ratingLabels[rating] || '';
             renderStars(rating);
         }
 
-        starButtons.forEach(function (button) {
-            button.addEventListener('click', function () {
-                selectRating(Number(button.dataset.rating));
-            });
-
-            button.addEventListener('mouseenter', function () {
-                renderStars(Number(button.dataset.rating));
-            });
-
-            button.addEventListener('focus', function () {
-                renderStars(Number(button.dataset.rating));
-            });
+        starButtons.forEach(button => {
+            button.addEventListener('click', () => selectRating(Number(button.dataset.rating)));
+            button.addEventListener('mouseenter', () => renderStars(Number(button.dataset.rating)));
         });
 
-        document.getElementById('starRating').addEventListener('mouseleave', function () {
-            renderStars(selectedRating);
-        });
+        document.getElementById('starRating').addEventListener('mouseleave', () => renderStars(selectedRating));
 
         if (selectedRating >= 1 && selectedRating <= 5) {
             selectRating(selectedRating);
-        } else {
-            renderStars(0);
         }
-
-        function updateCharacterCount() {
-            characterCount.textContent = messageInput.value.length + ' / 2000';
-        }
-
-        messageInput.addEventListener('input', updateCharacterCount);
-        updateCharacterCount();
 
         feedbackForm.addEventListener('submit', function (event) {
             if (!selectedRating || selectedRating < 1 || selectedRating > 5) {
                 event.preventDefault();
                 ratingResult.textContent = 'Please select a rating before submitting.';
-                document.getElementById('starRating').scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
                 return;
             }
-
-            if (!feedbackForm.checkValidity()) {
-                event.preventDefault();
-                feedbackForm.reportValidity();
-                return;
-            }
-
-            // Let Flask process the form. The server should confirm success.
             submitButton.disabled = true;
-            submitButton.textContent = 'Submitting Feedback...';
+            submitButton.textContent = 'Submitting...';
         });
     </script>
 
