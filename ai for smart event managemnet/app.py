@@ -522,7 +522,6 @@ def index():
     """Real Home / Landing page."""
     return render_template('index.html')
 
-# Alias so url_for('home') or url_for('index') works in any template
 app.add_url_rule('/home', endpoint='home', view_func=index)
 
 
@@ -532,8 +531,8 @@ def events():
     all_events = Event.query.all()
     return render_template('browse_event.html', events=all_events)
 
-# Alias so url_for('browse_events') works in all templates
 app.add_url_rule('/browse-events', endpoint='browse_events', view_func=events)
+
 
 # ------------------ Authentication Routes ------------------
 @app.route('/login', methods=['GET', 'POST'])
@@ -657,7 +656,9 @@ def user_register_event():
     return render_template('user_register_event.html', events=events_list)
 
 
-@app.route('/event/<int:event_id>/register', methods=['GET', 'POST'])
+# Supports both endpoint names: url_for('register_for_event') and url_for('register_event')
+@app.route('/event/<int:event_id>/register', methods=['GET', 'POST'], endpoint='register_for_event')
+@app.route('/event/<int:event_id>/register_event', methods=['GET', 'POST'], endpoint='register_event')
 @login_required
 def register_for_event(event_id):
     event = Event.query.get_or_404(event_id)
@@ -700,7 +701,6 @@ def user_my_registrations():
     registrations = Registration.query.filter_by(user_id=current_user.id).all()
     return render_template('user_registrations.html', registrations=registrations)
 
-# Alias so templates referencing url_for('user_registrations') work smoothly
 app.add_url_rule('/user/registrations-alias', endpoint='user_registrations', view_func=user_my_registrations)
 
 
