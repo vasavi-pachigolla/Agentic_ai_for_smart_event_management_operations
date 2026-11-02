@@ -12,7 +12,6 @@ from google import genai
 from google.genai import types
 from apscheduler.schedulers.background import BackgroundScheduler
 from dotenv import load_dotenv
-from markupsafe import Markup
 
 load_dotenv()
 
@@ -29,46 +28,6 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-
-# ------------------ Safe Template Form Mock ------------------
-class _SafeFormField:
-    """Safe fallback for templates referencing form fields or CSRF tokens."""
-    def __init__(self, name=''):
-        self.name = name
-        self.errors = []
-        self.data = None
-
-    def __call__(self, *args, **kwargs):
-        return Markup('')
-
-    def __html__(self):
-        return Markup('')
-
-    def __str__(self):
-        return ''
-
-    def __bool__(self):
-        return False
-
-    def __getattr__(self, item):
-        return _SafeFormField(item)
-
-
-class _SafeForm:
-    """Provides safe fallback attributes for templates expecting a WTForms 'form' object."""
-    def __getattr__(self, name):
-        return _SafeFormField(name)
-
-    def hidden_tag(self):
-        return Markup('')
-
-
-@app.context_processor
-def inject_safe_form():
-    """Injects a safe dummy 'form' object into all Jinja templates to prevent UndefinedError."""
-    return {'form': _SafeForm()}
-
-
 # ------------------ Models ------------------
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -84,7 +43,6 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
@@ -95,7 +53,6 @@ class Event(db.Model):
     capacity = db.Column(db.Integer)
     status = db.Column(db.String(20), default='upcoming')
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-
 
 class Registration(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -109,7 +66,6 @@ class Registration(db.Model):
     user = db.relationship('User', backref='registrations')
     event = db.relationship('Event', backref='registrations')
 
-
 class Venue(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -117,7 +73,6 @@ class Venue(db.Model):
     utilization = db.Column(db.Float, default=0.0)
     status = db.Column(db.String(20), default='available')
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-
 
 class Speaker(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -128,7 +83,6 @@ class Speaker(db.Model):
     availability = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
-
 class Sponsorship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sponsor_name = db.Column(db.String(100), nullable=False)
@@ -138,7 +92,6 @@ class Sponsorship(db.Model):
     roi = db.Column(db.Float, default=0.0)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
-
 class Incident(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
@@ -147,7 +100,6 @@ class Incident(db.Model):
     status = db.Column(db.String(20), default='open')
     reported_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     resolved_at = db.Column(db.DateTime, nullable=True)
-
 
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -161,7 +113,6 @@ class Notification(db.Model):
 
     user = db.relationship('User', backref='notifications')
 
-
 class Reminder(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -173,7 +124,6 @@ class Reminder(db.Model):
 
     user = db.relationship('User', backref='reminders')
     event = db.relationship('Event', backref='reminders')
-
 
 class Feedback(db.Model):
     __tablename__ = 'feedback'
@@ -187,13 +137,10 @@ class Feedback(db.Model):
 
     user = db.relationship('User', backref='feedbacks')
     event = db.relationship('Event', backref='feedbacks')
-
-
 # ------------------ Login Loader ------------------
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
 
 # ------------------ Gemini Assistant ------------------
 class GeminiAssistant:
@@ -203,7 +150,7 @@ class GeminiAssistant:
         if not api_key:
             raise ValueError("GEMINI_API_KEY not set. Please set it in your environment.")
         self.client = genai.Client(api_key=api_key)
-        self.model = "gemini-3.8-flash"
+        self.model = "gemini-3.6-flash"
         self.system_instruction = """
         You are EventOps AI, an intelligent assistant for event management.
         You can help users with event information, registrations, venues, speakers, and reminders.
@@ -237,6 +184,7 @@ class GeminiAssistant:
             'get_speakers': self.get_speakers,
         }
 
+    # ----- Helper methods -----
     def get_events(self):
         events = Event.query.all()
         return [{'id': e.id, 'title': e.title, 'date': e.date, 'time': e.time, 'location': e.location, 'capacity': e.capacity} for e in events]
@@ -276,7 +224,10 @@ class GeminiAssistant:
         except Exception as e:
             return {'error': str(e)}
 
+    # ----- Main processing -----
     def process_query(self, user_message):
+        # ---- PRE‑PROCESSING: direct handling for common queries ----
+        # 1. My registrations
         if re.search(r'\b(my registrations|my events|my tickets|what am I registered for|registrations\b)', user_message, re.IGNORECASE):
             result = self.get_my_registrations(self.user_id)
             if isinstance(result, list):
@@ -284,8 +235,10 @@ class GeminiAssistant:
                     return "You are not registered for any events."
                 lines = [f"• {item['event_title']} (Ticket: {item['ticket_type']}) - Checked in: {'✅' if item['checked_in'] else '❌'}" for item in result]
                 return "\n".join(lines)
-            return str(result)
+            else:
+                return str(result)
 
+        # 2. Upcoming events
         if re.search(r'\b(upcoming events|show events|list events|what events are coming)\b', user_message, re.IGNORECASE):
             events = self.get_events()
             if not events:
@@ -293,6 +246,7 @@ class GeminiAssistant:
             lines = [f"• {e['title']} on {e['date']} at {e['time']} ({e['location']})" for e in events]
             return "\n".join(lines)
 
+        # 3. Venues
         if re.search(r'\b(venues|rooms|locations)\b', user_message, re.IGNORECASE):
             venues = self.get_venues()
             if not venues:
@@ -300,6 +254,7 @@ class GeminiAssistant:
             lines = [f"• {v['name']} (Capacity: {v['capacity']}) - {v['status']}" for v in venues]
             return "\n".join(lines)
 
+        # 4. Speakers
         if re.search(r'\b(speakers|sessions|who is speaking)\b', user_message, re.IGNORECASE):
             speakers = self.get_speakers()
             if not speakers:
@@ -307,6 +262,7 @@ class GeminiAssistant:
             lines = [f"• {s['name']} - {s['session_title']} ({s['schedule']})" for s in speakers]
             return "\n".join(lines)
 
+        # ---- If not matched, use Gemini ----
         prompt = f"""
         You are an assistant for an event management platform.
         The user said: "{user_message}"
@@ -363,7 +319,8 @@ class GeminiAssistant:
                         return "You are not registered for any events."
                     lines = [f"• {item['event_title']} (Ticket: {item['ticket_type']}) - Checked in: {'✅' if item['checked_in'] else '❌'}" for item in result]
                     return "\n".join(lines)
-                return str(result)
+                else:
+                    return str(result)
             return msg
 
         func = self.functions.get(action)
@@ -399,7 +356,7 @@ class GeminiAssistant:
                 elif 'event_title' in item:
                     lines.append(f"• {item['event_title']} (Ticket: {item['ticket_type']}) - Checked in: {'✅' if item['checked_in'] else '❌'}")
                 elif 'name' in item:
-                    lines.append(f"• {item['name']} - {item.get('session_title', '')} ({item.get('schedule', '')})")
+                    lines.append(f"• {item['name']} - {item.get('session_title', '')} {item.get('schedule', '')}")
                 else:
                     lines.append(str(item))
             return "\n".join(lines)
@@ -411,7 +368,6 @@ class GeminiAssistant:
             return "\n".join([f"{k}: {v}" for k, v in result.items()])
         else:
             return str(result)
-
 
 # ------------------ Scheduler for Reminders ------------------
 def process_reminders():
@@ -434,12 +390,11 @@ def process_reminders():
                 reminder.sent = True
         db.session.commit()
 
-
+# Start background scheduler
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=process_reminders, trigger="interval", seconds=60)
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
-
 
 # ------------------ Helper: Mock Data Generation ------------------
 def init_db():
@@ -451,6 +406,7 @@ def init_db():
         db.session.add_all([admin, user])
         db.session.commit()
 
+        # --- Create Events ---
         events = [
             Event(title='AI Summit 2026', description='The future of AI in business',
                   date='2026-07-10', time='09:00 AM', location='Main Hall', capacity=200, status='upcoming'),
@@ -463,6 +419,7 @@ def init_db():
             db.session.add(e)
         db.session.commit()
 
+        # --- Registrations ---
         admin_user = User.query.filter_by(email='admin@eventops.com').first()
         reg_user = User.query.filter_by(email='user@eventops.com').first()
         if admin_user and reg_user:
@@ -477,11 +434,12 @@ def init_db():
                 ))
             db.session.commit()
 
+        # --- Venues ---
         venues = ['Main Hall', 'Room A', 'Room B', 'Exhibition Hall', 'Breakout Area']
         for v in venues:
             db.session.add(Venue(name=v, capacity=random.randint(50, 500),
                                  utilization=round(random.uniform(0.2, 0.9), 2)))
-
+        # --- Speakers ---
         speakers = [
             ('Dr. Smith', 'AI Researcher', 'Keynote: Future of AI', 'Day 1 9:00'),
             ('Prof. Lee', 'Data Scientist', 'Data Ethics', 'Day 1 11:00'),
@@ -489,7 +447,7 @@ def init_db():
         ]
         for name, bio, session, schedule in speakers:
             db.session.add(Speaker(name=name, bio=bio, session_title=session, schedule=schedule))
-
+        # --- Sponsorships ---
         sponsors = [
             ('Acme Corp', '$50k', 'Logo + booth', 85, 1.2),
             ('Beta Inc', '$30k', 'Session sponsor', 70, 0.9),
@@ -498,7 +456,7 @@ def init_db():
         for s, c, d, vs, roi in sponsors:
             db.session.add(Sponsorship(sponsor_name=s, commitment=c, deliverables=d,
                                        visibility_score=vs, roi=roi))
-
+        # --- Incidents ---
         incidents = [
             ('Wi-Fi outage', 'Main hall connectivity lost', 'high'),
             ('Speaker delay', 'Keynote speaker is late', 'medium'),
@@ -506,7 +464,7 @@ def init_db():
         ]
         for title, desc, priority in incidents:
             db.session.add(Incident(title=title, description=desc, priority=priority))
-
+        # --- Notifications ---
         notifications = [
             ('admin@eventops.com', 'email', 'Welcome', 'Welcome to EventOps AI'),
             ('user@eventops.com', 'sms', 'Event Reminder', 'Your event starts tomorrow')
@@ -515,26 +473,11 @@ def init_db():
             db.session.add(Notification(recipient=rec, channel=ch, subject=sub, message=msg))
         db.session.commit()
 
-
-# ------------------ Home & Events Routes (Separated) ------------------
+# ------------------ Routes ------------------
 @app.route('/')
 def index():
-    """Real Home / Landing page."""
     return render_template('index.html')
 
-app.add_url_rule('/home', endpoint='home', view_func=index)
-
-
-@app.route('/events')
-def events():
-    """Catalog of all events."""
-    all_events = Event.query.all()
-    return render_template('browse_event.html', events=all_events)
-
-app.add_url_rule('/browse-events', endpoint='browse_events', view_func=events)
-
-
-# ------------------ Authentication Routes ------------------
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -550,42 +493,33 @@ def login():
         flash('Invalid email or password', 'danger')
     return render_template('login.html')
 
-
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     flash('Logged out', 'info')
-    return redirect(url_for('events'))
-
+    return redirect(url_for('index'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
-
     if request.method == 'POST':
         name = request.form.get('name')
         email = request.form.get('email')
         password = request.form.get('password')
-
-        if not name or not email or not password:
-            flash('Please fill in all required fields.', 'danger')
-        elif User.query.filter_by(email=email).first():
+        role = request.form.get('role', 'user')
+        if User.query.filter_by(email=email).first():
             flash('Email already registered', 'danger')
         else:
-            user = User(name=name, email=email, role='user')
+            user = User(name=name, email=email, role=role)
             user.set_password(password)
             db.session.add(user)
             db.session.commit()
-
             flash('Registration successful! Please login.', 'success')
             return redirect(url_for('login'))
-
     return render_template('register.html')
 
-
-# ------------------ User Portal Routes ------------------
 @app.route('/dashboard')
 @login_required
 def dashboard():
@@ -618,7 +552,6 @@ def dashboard():
                            recent_activities=recent_activities,
                            recent_incidents=recent_incidents)
 
-
 @app.route('/profile')
 @login_required
 def profile():
@@ -633,11 +566,11 @@ def profile():
     }
     return render_template('profile.html', stats=stats)
 
-
+# ------------------ User Event Routes ------------------
 @app.route('/user/register', methods=['GET', 'POST'])
 @login_required
 def user_register_event():
-    events_list = Event.query.filter(Event.status != 'completed').all()
+    events = Event.query.filter(Event.status != 'completed').all()
     if request.method == 'POST':
         event_id = request.form.get('event_id', type=int)
         ticket_type = request.form.get('ticket_type', 'Standard')
@@ -653,60 +586,35 @@ def user_register_event():
                 db.session.commit()
                 flash('Successfully registered for the event!', 'success')
                 return redirect(url_for('dashboard'))
-    return render_template('user_register_event.html', events=events_list)
+    return render_template('user_register_event.html', events=events)
 
-
-# Supports both endpoint names: url_for('register_for_event') and url_for('register_event')
-@app.route('/event/<int:event_id>/register', methods=['GET', 'POST'], endpoint='register_for_event')
-@app.route('/event/<int:event_id>/register_event', methods=['GET', 'POST'], endpoint='register_event')
+@app.route('/event/<int:event_id>/register', methods=['GET', 'POST'])
 @login_required
 def register_for_event(event_id):
     event = Event.query.get_or_404(event_id)
-
-    if request.method == 'GET':
-        return redirect(url_for('event_detail', event_id=event_id))
-
-    if event.status == 'completed':
-        flash('Registration is closed for this event.', 'warning')
-        return redirect(url_for('event_detail', event_id=event_id))
-
-    existing = Registration.query.filter_by(
-        user_id=current_user.id,
-        event_id=event_id
-    ).first()
-
-    if existing:
-        flash('You are already registered for this event.', 'warning')
-    else:
-        registration_count = Registration.query.filter_by(event_id=event_id).count()
-        if event.capacity is not None and registration_count >= event.capacity:
-            flash('Sorry, this event has reached its capacity.', 'danger')
+    if request.method == 'POST':
+        ticket_type = request.form.get('ticket_type', 'Standard')
+        existing = Registration.query.filter_by(user_id=current_user.id, event_id=event_id).first()
+        if existing:
+            flash('You are already registered for this event.', 'warning')
         else:
-            ticket_type = request.form.get('ticket_type', 'Standard')
-            reg = Registration(
-                user_id=current_user.id,
-                event_id=event_id,
-                ticket_type=ticket_type
-            )
+            reg = Registration(user_id=current_user.id, event_id=event_id, ticket_type=ticket_type)
             db.session.add(reg)
             db.session.commit()
             flash('Successfully registered for the event!', 'success')
-
-    return redirect(url_for('event_detail', event_id=event_id))
-
+            return redirect(url_for('event_detail', event_id=event_id))
+    return render_template('event_register.html', event=event)
 
 @app.route('/user/registrations')
 @login_required
 def user_my_registrations():
     registrations = Registration.query.filter_by(user_id=current_user.id).all()
     return render_template('user_registrations.html', registrations=registrations)
-
-app.add_url_rule('/user/registrations-alias', endpoint='user_registrations', view_func=user_my_registrations)
-
-
+# ----- EDIT & DELETE routes (already here) -----
 @app.route('/user/registrations/cancel/<int:reg_id>', methods=['POST'])
 @login_required
 def cancel_registration(reg_id):
+    """Cancel (delete) a user's registration."""
     reg = Registration.query.get_or_404(reg_id)
     if reg.user_id != current_user.id:
         abort(403)
@@ -716,10 +624,10 @@ def cancel_registration(reg_id):
     flash(f'Your registration for "{event_title}" has been cancelled.', 'success')
     return redirect(url_for('user_my_registrations'))
 
-
 @app.route('/user/registrations/edit/<int:reg_id>', methods=['POST'])
 @login_required
 def edit_registration(reg_id):
+    """Change the ticket type for a registration."""
     reg = Registration.query.get_or_404(reg_id)
     if reg.user_id != current_user.id:
         abort(403)
@@ -732,22 +640,24 @@ def edit_registration(reg_id):
         flash('Invalid ticket type.', 'danger')
     return redirect(url_for('user_my_registrations'))
 
+@app.route('/events')
+@login_required
+def browse_events():
+    events = Event.query.all()
+    return render_template('browse_events.html', events=events)
 
 @app.route('/event/<int:event_id>')
+@login_required
 def event_detail(event_id):
     event = Event.query.get_or_404(event_id)
-    registered = False
-    if current_user.is_authenticated:
-        registered = Registration.query.filter_by(user_id=current_user.id, event_id=event_id).first() is not None
+    registered = Registration.query.filter_by(user_id=current_user.id, event_id=event_id).first() is not None
     return render_template('event_detail.html', event=event, registered=registered)
-
 
 # ------------------ Assistant Routes ------------------
 @app.route('/assistant')
 @login_required
 def assistant_page():
     return render_template('assistant.html', now=datetime.now(timezone.utc))
-
 
 @app.route('/api/assistant', methods=['POST'])
 @login_required
@@ -763,49 +673,14 @@ def assistant_api():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
-# ------------------ Feedback Routes ------------------
-@app.route('/feedback/<int:event_id>', methods=['GET', 'POST'])
-@login_required
-def feedback(event_id):
-    event = Event.query.get_or_404(event_id)
-    existing = Feedback.query.filter_by(user_id=current_user.id, event_id=event_id).first()
-    if request.method == 'POST':
-        rating = request.form.get('rating', type=int)
-        comment = request.form.get('comment', '').strip()
-        if not rating or rating < 1 or rating > 5:
-            flash('Please select a rating (1–5).', 'danger')
-            return render_template('feedback.html', event=event, existing=existing)
-        if existing:
-            existing.rating = rating
-            existing.comment = comment
-            db.session.commit()
-            flash('Your feedback has been updated.', 'success')
-        else:
-            fb = Feedback(user_id=current_user.id, event_id=event_id, rating=rating, comment=comment)
-            db.session.add(fb)
-            db.session.commit()
-            flash('Thank you for your feedback!', 'success')
-        return redirect(url_for('event_detail', event_id=event_id))
-    return render_template('feedback.html', event=event, existing=existing)
-
-
-@app.route('/my-feedback')
-@login_required
-def feedback_list():
-    feedbacks = Feedback.query.filter_by(user_id=current_user.id).order_by(Feedback.created_at.desc()).all()
-    return render_template('feedback_list.html', feedbacks=feedbacks)
-
-
 # ------------------ Admin Routes ------------------
 @app.route('/admin/events')
 @login_required
 def admin_events():
     if current_user.role != 'admin':
         abort(403)
-    events_list = Event.query.all()
-    return render_template('admin_events.html', events=events_list)
-
+    events = Event.query.all()
+    return render_template('admin_events.html', events=events)
 
 @app.route('/admin/events/add', methods=['GET', 'POST'])
 @login_required
@@ -830,7 +705,6 @@ def admin_event_add():
             return redirect(url_for('admin_events'))
     return render_template('admin_event_form.html', event=None)
 
-
 @app.route('/admin/events/edit/<int:event_id>', methods=['GET', 'POST'])
 @login_required
 def admin_event_edit(event_id):
@@ -850,7 +724,6 @@ def admin_event_edit(event_id):
         return redirect(url_for('admin_events'))
     return render_template('admin_event_form.html', event=event)
 
-
 @app.route('/admin/events/delete/<int:event_id>')
 @login_required
 def admin_event_delete(event_id):
@@ -862,7 +735,6 @@ def admin_event_delete(event_id):
     flash('Event deleted!', 'success')
     return redirect(url_for('admin_events'))
 
-
 @app.route('/admin/registrations')
 @login_required
 def admin_registrations():
@@ -870,7 +742,6 @@ def admin_registrations():
         abort(403)
     registrations = Registration.query.all()
     return render_template('admin_registrations.html', registrations=registrations)
-
 
 @app.route('/admin/registrations/checkin/<int:reg_id>')
 @login_required
@@ -883,7 +754,6 @@ def admin_checkin(reg_id):
     flash(f'Check-in status updated for {reg.event.title}', 'success')
     return redirect(url_for('admin_registrations'))
 
-
 @app.route('/admin/venues')
 @login_required
 def admin_venues():
@@ -891,7 +761,6 @@ def admin_venues():
         abort(403)
     venues = Venue.query.all()
     return render_template('admin_venues.html', venues=venues)
-
 
 @app.route('/admin/venues/add', methods=['GET', 'POST'])
 @login_required
@@ -907,7 +776,6 @@ def admin_venue_add():
             flash('Venue added', 'success')
             return redirect(url_for('admin_venues'))
     return render_template('admin_venue_form.html', venue=None)
-
 
 @app.route('/admin/venues/edit/<int:venue_id>', methods=['GET', 'POST'])
 @login_required
@@ -925,7 +793,6 @@ def admin_venue_edit(venue_id):
         return redirect(url_for('admin_venues'))
     return render_template('admin_venue_form.html', venue=venue)
 
-
 @app.route('/admin/venues/delete/<int:venue_id>')
 @login_required
 def admin_venue_delete(venue_id):
@@ -937,7 +804,6 @@ def admin_venue_delete(venue_id):
     flash('Venue deleted', 'success')
     return redirect(url_for('admin_venues'))
 
-
 @app.route('/admin/speakers')
 @login_required
 def admin_speakers():
@@ -945,7 +811,6 @@ def admin_speakers():
         abort(403)
     speakers = Speaker.query.all()
     return render_template('admin_speakers.html', speakers=speakers)
-
 
 @app.route('/admin/speakers/add', methods=['GET', 'POST'])
 @login_required
@@ -965,7 +830,6 @@ def admin_speaker_add():
             return redirect(url_for('admin_speakers'))
     return render_template('admin_speaker_form.html', speaker=None)
 
-
 @app.route('/admin/speakers/edit/<int:speaker_id>', methods=['GET', 'POST'])
 @login_required
 def admin_speaker_edit(speaker_id):
@@ -983,7 +847,6 @@ def admin_speaker_edit(speaker_id):
         return redirect(url_for('admin_speakers'))
     return render_template('admin_speaker_form.html', speaker=speaker)
 
-
 @app.route('/admin/speakers/delete/<int:speaker_id>')
 @login_required
 def admin_speaker_delete(speaker_id):
@@ -995,7 +858,6 @@ def admin_speaker_delete(speaker_id):
     flash('Speaker deleted', 'success')
     return redirect(url_for('admin_speakers'))
 
-
 @app.route('/admin/sponsorships')
 @login_required
 def admin_sponsorships():
@@ -1004,8 +866,7 @@ def admin_sponsorships():
     sponsorships = Sponsorship.query.all()
     return render_template('admin_sponsorships.html', sponsorships=sponsorships)
 
-
-@app.route('/admin/sponsorship_add', methods=['GET', 'POST'])
+@app.route('/admin/sponsorships/add', methods=['GET', 'POST'])
 @login_required
 def admin_sponsorship_add():
     if current_user.role != 'admin':
@@ -1022,7 +883,6 @@ def admin_sponsorship_add():
             flash('Sponsorship added', 'success')
             return redirect(url_for('admin_sponsorships'))
     return render_template('admin_sponsorship_form.html', sponsorship=None)
-
 
 @app.route('/admin/sponsorships/edit/<int:sponsorship_id>', methods=['GET', 'POST'])
 @login_required
@@ -1041,7 +901,6 @@ def admin_sponsorship_edit(sponsorship_id):
         return redirect(url_for('admin_sponsorships'))
     return render_template('admin_sponsorship_form.html', sponsorship=sp)
 
-
 @app.route('/admin/sponsorships/delete/<int:sponsorship_id>')
 @login_required
 def admin_sponsorship_delete(sponsorship_id):
@@ -1054,15 +913,19 @@ def admin_sponsorship_delete(sponsorship_id):
     return redirect(url_for('admin_sponsorships'))
 
 
+from datetime import datetime, timezone
+
+
 @app.route('/admin/incidents')
 @login_required
 def admin_incidents():
     if current_user.role != 'admin':
         abort(403)
     incidents = Incident.query.all()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(timezone.utc)  # timezone-aware
 
     for inc in incidents:
+        # Ensure reported_at is also timezone-aware
         if inc.reported_at.tzinfo is None:
             inc.reported_at = inc.reported_at.replace(tzinfo=timezone.utc)
 
@@ -1079,7 +942,6 @@ def admin_incidents():
 
     return render_template('admin_incidents.html', incidents=incidents, now=now)
 
-
 @app.route('/admin/incidents/add', methods=['GET', 'POST'])
 @login_required
 def admin_incident_add():
@@ -1095,7 +957,6 @@ def admin_incident_add():
             flash('Incident added', 'success')
             return redirect(url_for('admin_incidents'))
     return render_template('admin_incident_form.html', incident=None)
-
 
 @app.route('/admin/incidents/edit/<int:incident_id>', methods=['GET', 'POST'])
 @login_required
@@ -1115,7 +976,6 @@ def admin_incident_edit(incident_id):
         return redirect(url_for('admin_incidents'))
     return render_template('admin_incident_form.html', incident=inc)
 
-
 @app.route('/admin/incidents/delete/<int:incident_id>')
 @login_required
 def admin_incident_delete(incident_id):
@@ -1127,12 +987,8 @@ def admin_incident_delete(incident_id):
     flash('Incident deleted', 'success')
     return redirect(url_for('admin_incidents'))
 
-
 @app.route('/admin/intelligence')
-@login_required
 def admin_intelligence():
-    if current_user.role != 'admin':
-        abort(403)
     now = datetime.now()
     context = {
         'health_score': 85,
@@ -1188,7 +1044,6 @@ def admin_intelligence():
     }
     return render_template('admin_intelligence.html', **context)
 
-
 @app.route('/admin/notifications')
 @login_required
 def admin_notifications():
@@ -1196,7 +1051,6 @@ def admin_notifications():
         abort(403)
     notifications = Notification.query.order_by(Notification.sent_at.desc()).all()
     return render_template('admin_notifications.html', notifications=notifications)
-
 
 @app.route('/admin/notifications/send', methods=['GET', 'POST'])
 @login_required
@@ -1225,33 +1079,65 @@ def admin_feedback():
     feedbacks = Feedback.query.order_by(Feedback.created_at.desc()).all()
     return render_template('admin_feedback.html', feedbacks=feedbacks)
 
-
 @app.route('/admin/feedback/delete/<int:feedback_id>')
 @login_required
 def admin_feedback_delete(feedback_id):
     if current_user.role != 'admin':
         abort(403)
-    feedback_item = Feedback.query.get_or_404(feedback_id)
-    db.session.delete(feedback_item)
+    feedback = Feedback.query.get_or_404(feedback_id)
+    db.session.delete(feedback)
     db.session.commit()
     flash('Feedback deleted.', 'success')
     return redirect(url_for('admin_feedback'))
 
+# USER FEEDBACK ROUTE
+@app.route('/feedback/<int:event_id>', methods=['GET', 'POST'])
+@login_required
+def feedback(event_id):
+    event = Event.query.get_or_404(event_id)
+    existing = Feedback.query.filter_by(user_id=current_user.id, event_id=event_id).first()
+    if request.method == 'POST':
+        rating = request.form.get('rating', type=int)
+        comment = request.form.get('comment', '').strip()
+        if not rating or rating < 1 or rating > 5:
+            flash('Please select a rating (1–5).', 'danger')
+            return render_template('feedback.html', event=event, existing=existing)
+        if existing:
+            existing.rating = rating
+            existing.comment = comment
+            db.session.commit()
+            flash('Your feedback has been updated.', 'success')
+        else:
+            fb = Feedback(user_id=current_user.id, event_id=event_id, rating=rating, comment=comment)
+            db.session.add(fb)
+            db.session.commit()
+            flash('Thank you for your feedback!', 'success')
+        return redirect(url_for('event_detail', event_id=event_id))
+    return render_template('feedback.html', event=event, existing=existing)
 
-# ------------------ Informational Pages ------------------
+@app.route('/my-feedback')
+@login_required
+def feedback_list():
+    feedbacks = Feedback.query.filter_by(user_id=current_user.id).order_by(Feedback.created_at.desc()).all()
+    return render_template('feedback_list.html', feedbacks=feedbacks)
+
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
     if request.method == 'POST':
         name = request.form.get('name')
+        email = request.form.get('email')
+        subject = request.form.get('subject', 'No subject')
+        message = request.form.get('message')
+        # Here you can send an email, save to database, or show a success message
+        # For now, just flash a success message
         flash(f'Thank you {name}! Your message has been sent.', 'success')
         return redirect(url_for('contact'))
     return render_template('contact.html')
 
-
 @app.route('/about')
 def about():
+    from datetime import datetime, timezone
     return render_template('about.html', now=datetime.now(timezone.utc))
-
 
 # ------------------ Main ------------------
 with app.app_context():
